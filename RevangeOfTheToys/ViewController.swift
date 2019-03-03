@@ -5,8 +5,8 @@
 import UIKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, WaveControlerProtocol, SCNPhysicsContactDelegate {
-    
+class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, WaveControlerProtocol, SCNPhysicsContactDelegate, EnableShootProtocol {
+
     let itemsArray: [String] = ["box", "cylinder", "tower"]
     
     var groundPlane: SCNNode?
@@ -16,12 +16,18 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     var hasPointer = false;
     var selectedItem: String?
     var waveController: WaveMechanics!
-    var target: SCNNode?
+    var objectFactory: ObjectFactory!
+    var target: SCNNode?    
     
     @IBOutlet weak var sceneView: ARSCNView!
+    
+    @IBOutlet weak var informationLabel: UILabel! //label in the middle
+    @IBOutlet weak var itemsCollectionView: UICollectionView! //collectionview
+    
+    //buttons
+    @IBOutlet weak var shootButton: UIButton!
     @IBOutlet weak var addButton: UIButton!
-    @IBOutlet weak var informationLabel: UILabel!
-    @IBOutlet weak var itemsCollectionView: UICollectionView!
+    @IBOutlet weak var nextWaveButton: UIButton!
     
     let configuration = ARWorldTrackingConfiguration()
     
@@ -39,11 +45,34 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         self.itemsCollectionView.delegate = self
         self.sceneView.scene.physicsWorld.contactDelegate = self
         self.selectedItem = itemsArray[0]
+        self.objectFactory = ObjectFactory()
+        self.objectFactory.delegate = self
+        
+        prepareUI()
         
         // Do any additional setup after loading the view, typically from a nib.
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return itemsArray.count
+    }
+    func editButtons(){
+        nextWaveButton.layer.cornerRadius = 10
+        nextWaveButton.clipsToBounds = true
+        
+        shootButton.layer.cornerRadius = 10
+        shootButton.clipsToBounds = true
+        
+        addButton.layer.cornerRadius = 10
+        addButton.clipsToBounds = true
+    }
+    
+    func prepareUI(){
+        editButtons()
+        addButton.isHidden = true
+        shootButton.isHidden = true
+        itemsCollectionView.isHidden = true
+        nextWaveButton.isHidden = true
+        print(self.itemsCollectionView.contentSize.width)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -99,24 +128,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     func createPointer(type: String)-> SCNNode{
         
         var node:SCNNode?
-        
-        // shadow node: a very long opaque box or cylinder for knowing where the box
-        //or cylinder to place would land. Uncomment in case you fix physics
-        
-//        var shadowNode:SCNNode?
-        
+
         if(type == "tower"){
-            node = ObjectFactory.createObject(ofType: "cylinder")
-//            shadowNode = SCNNode(geometry: ObjectFactory.createObject(ofType: "cylinder").geometry)
+            node = objectFactory.createObject(ofType: "cylinder")
         }else{
-            node = ObjectFactory.createObject(ofType: type)
-//            shadowNode = SCNNode(geometry: ObjectFactory.createObject(ofType: type).geometry)
+            node = objectFactory.createObject(ofType: type)
         }
-        
-//        shadowNode!.scale = SCNVector3(0.97, 100, 0.97)
-//        shadowNode!.geometry?.firstMaterial?.diffuse.contents = UIColor.white
-//        shadowNode!.geometry?.firstMaterial?.transparency = 0.1
-//        node!.addChildNode(shadowNode!)
+
+        node = objectFactory.createStaticPointer(object: node!)
         node!.name = type+"_shadow"
         node!.geometry?.firstMaterial?.diffuse.contents = UIColor.white
         node!.geometry?.firstMaterial?.transparency = 0.3
@@ -160,6 +179,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         DispatchQueue.main.async {
             self.informationLabel.text = ""
             self.hasPointer = true;
+            self.enableUI()
         }
         
     }
@@ -199,7 +219,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     }
     
     func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
-        print("contact")
         let nodeA = contact.nodeA
         let nodeB = contact.nodeB
         if nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue{
@@ -207,15 +226,23 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         }else if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue{
             self.target = nodeB
         }
-        if let name = nodeA.name {
-            print("nodeA name")
-            print(name)
-        }
-        if let name = nodeB.name {
-            print("nodeB name")
-            print(name)
+        
+        if nodeA.physicsBody?.categoryBitMask == BitMaskCategory.object.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue{
+            self.target = nodeA
+        }else if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.object.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue{
+            self.target = nodeB
         }
         
+//        if let name = nodeA.name {
+//            print("nodeA name")
+//            print(name)
+//        }
+//        if let name = nodeB.name {
+//            print("nodeB name")
+//            print(name)
+//        }
+        
+        //i the bullet hits the target
         if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue || nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue{
             let confetti = SCNParticleSystem(named: "Models.scnassets/Confetti.scnp", inDirectory: nil)
             confetti?.loops = false
@@ -227,21 +254,34 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
             self.sceneView.scene.rootNode.addChildNode(confettiNode)
             target?.removeFromParentNode()
         }
+        
+        //if the pointer is over an object
+        if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.object.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue || nodeA.physicsBody?.categoryBitMask == BitMaskCategory.object.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue{
+            print("over!")
+            if(nodeA.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue){
+                nodeA.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+            }else if(nodeB.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue){
+                nodeB.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+            }
+            DispatchQueue.main.async {
+                //Do UI Code here.
+                self.addButton.isEnabled = false
+            }
+        }else{
+            DispatchQueue.main.async {
+                //Do UI Code here.
+                self.addButton.isEnabled = true
+            }
+        }
 
     }
 
     @IBAction func addObject(_ sender: Any) {
-        let object = ObjectFactory.createObjectWithFriction(object: ObjectFactory.createObject(ofType: selectedItem!))
-//        let object = ObjectFactory.createObject(ofType: selectedItem!)
+        let object = objectFactory.createObjectWithFriction(object: objectFactory.createObject(ofType: selectedItem!))
         // z is for height and is negative up
-        print("plane bounding box max: ", groundPlane!.geometry!.boundingBox.max.y * 2)
-        print("plane bounding box min: ", groundPlane!.geometry!.boundingBox.min)
-        print("object bounding box max: ", object.geometry!.boundingBox.max.y * 4)
-        print("object bounding box min: ", object.geometry!.boundingBox.min)
         object.position = SCNVector3(pointer!.position.x - groundPlane!.parent!.position.x, groundPlane!.geometry!.boundingBox.max.y + object.geometry!.boundingBox.max.y,pointer!.position.z - groundPlane!.parent!.position.z)
         object.eulerAngles = pointer!.eulerAngles
 
-//        self.sceneView.scene.rootNode.addChildNode(object)
         groundPlane!.addChildNode(object)
         
     }
@@ -261,7 +301,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         
         selectedItem = "pointer"
         
-        print("shooting action")
         guard let pointOfView = sceneView.pointOfView else {return}
         let transform = pointOfView.transform
         let orientation = SCNVector3(-transform.m31,-transform.m32,-transform.m33)
@@ -284,7 +323,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         })
         
         for var node in nodes {
-            print("node")
             let bulletToShoot = bullet.clone()
             shootBullet(node: node, bullet: bulletToShoot, shootingForce: shootingForce, currentPositionOfCamera: currentPositionOfCamera)
         }
@@ -322,6 +360,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
 }
 
 extension ViewController{
+    func enableUI(){
+        itemsCollectionView.isHidden = false
+        addButton.isHidden = false
+        nextWaveButton.isHidden = false
+        print(self.itemsCollectionView.contentSize.width)
+    }
     func createGroundPlane(planeAnchor: ARPlaneAnchor)->SCNNode{
         
         let groundNode = SCNNode(geometry: SCNCylinder(radius: 2, height: 0.05))
@@ -334,11 +378,10 @@ extension ViewController{
         groundNode.physicsBody = body
         groundNode.position = SCNVector3(planeAnchor.center.x,planeAnchor.center.y,planeAnchor.center.z)
 
-        let goldNode = SCNNode(geometry: SCNBox(width: 0.2, height: 0.2, length: 0.2, chamferRadius: 0))
-        goldNode.geometry?.firstMaterial?.diffuse.contents = UIColor.yellow
-        goldNode.position = SCNVector3(0,0.1 + groundNode.geometry!.boundingBox.max.y,0)
+        let goldNode = objectFactory.createObject(ofType: "gold")
+        goldNode.position = SCNVector3(0,0.1,0)
         goldNode.name = "goldNode"
-        goldNode.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(geometry: goldNode.geometry!))
+        goldNode.physicsBody = SCNPhysicsBody.static()
         groundNode.addChildNode(goldNode)
         return groundNode
     }
@@ -347,6 +390,11 @@ extension ViewController{
         let alert = UIAlertController(title: "Wave", message: "Completed!", preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    func enableShootButton() {
+        print("Enabled!")
+        shootButton.isHidden = false
     }
     
     func toPlaneCoordinates(node: SCNNode, toNode: SCNNode) -> SCNVector3{

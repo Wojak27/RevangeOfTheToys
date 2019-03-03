@@ -11,4 +11,6 @@ import UIKit
 enum BitMaskCategory: Int {
     case bullet = 2
     case target = 3
+    case pointer = 4
+    case object = 5
 }
