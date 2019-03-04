@@ -5,6 +5,7 @@
 import UIKit
 import ARKit
 import AVFoundation
+import SCLAlertView
 
 class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, WaveControlerProtocol, SCNPhysicsContactDelegate, EnableShootProtocol, MissileLounched {
 
@@ -40,6 +41,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     @IBOutlet weak var informationLabel: UILabel! //label in the middle
     @IBOutlet weak var itemsCollectionView: UICollectionView! //collectionview
     
+    @IBOutlet weak var lookingForPlaneLabel: UILabel!
     //buttons
     @IBOutlet weak var shootButton: UIButton!
     @IBOutlet weak var addButton: UIButton!
@@ -257,7 +259,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         self.waveController.delegateMissile = self
         
         DispatchQueue.main.async {
-            self.informationLabel.text = ""
+            self.lookingForPlaneLabel.text = ""
             self.hasPointer = true;
             self.enableUI()
         }
@@ -508,7 +510,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         let position = posOr[0]
         let orientation = posOr[1]
         var power = Float(50)
-        let bullet = SCNNode(geometry: SCNSphere(radius: 0.008))
+        let bullet = SCNNode(geometry: SCNSphere(radius: 0.01))
         bullet.geometry?.firstMaterial?.diffuse.contents = UIColor.black
         bullet.position = position
         let body = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(node: bullet, options: nil))
@@ -668,30 +670,22 @@ extension ViewController{
         playMissileLounch()
     }
     func showWaveCompletedAlert(){
-        let alert = UIAlertController(title: "Wave \(waveController.waveNumber)", message: "Completed!", preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
-        
-        self.present(alert, animated: true, completion: nil)
+
+        SCLAlertView().showSuccess("Wave \(waveController.waveNumber)", subTitle: "Completed!")
     }
     
     func showNoMoreObjectsAlert(){
-        let alert = UIAlertController(title: "Ooops!", message: "Can't place more objects!", preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
-        
-        self.present(alert, animated: true, completion: nil)
+
+        SCLAlertView().showError("Ooops!", subTitle: "Can't place more objects!")
     }
     func showNoTowersAlert(){
-        let alert = UIAlertController(title: "Nothing to shot with", message: "Add some towers!", preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
-        addButton.isEnabled = true
-        self.present(alert, animated: true, completion: nil)
+
+        SCLAlertView().showInfo("Nothing to shot with", subTitle: "Add some towers!")
     }
     
     func showAlertGameOver(){
-        let alert = UIAlertController(title: "Play Again?", message: "You've lost!", preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertAction.Style.default, handler: nil))
-        addButton.isEnabled = true
-        self.present(alert, animated: true, completion: nil)
+
+        SCLAlertView().showNotice("You've lost!", subTitle: "Play Again?")
     }
     
     func enableShootButton() {

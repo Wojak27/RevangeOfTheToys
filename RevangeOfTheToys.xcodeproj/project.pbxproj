@@ -7,21 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		678EDFFBFD33395FD05260E6 /* Pods_RevangeOfTheToysUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A23CE53C8E4E650078CE962 /* Pods_RevangeOfTheToysUITests.framework */; };
+		82F8FA7813DD29C32A40EE75 /* Pods_RevangeOfTheToys.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E1BB7034E8EB3374FF066F3 /* Pods_RevangeOfTheToys.framework */; };
 		9812FED322228C8600ECD323 /* WaveMachanics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9812FED222228C8600ECD323 /* WaveMachanics.swift */; };
 		9812FED9222291DC00ECD323 /* WaveControlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9812FED8222291DC00ECD323 /* WaveControlerProtocol.swift */; };
 		9812FEDB2222D1D400ECD323 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9812FEDA2222D1D400ECD323 /* Enums.swift */; };
+		9812FEF8222BFCF400ECD323 /* ButtonsProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9812FEF7222BFCF400ECD323 /* ButtonsProtocol.swift */; };
 		981BA9E721F1DD3800B7DE0C /* ObjectFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 981BA9E621F1DD3800B7DE0C /* ObjectFactory.swift */; };
 		982C73CE21ED34A300107C61 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982C73CD21ED34A300107C61 /* AppDelegate.swift */; };
 		982C73D021ED34A300107C61 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982C73CF21ED34A300107C61 /* ViewController.swift */; };
 		982C73D321ED34A300107C61 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 982C73D121ED34A300107C61 /* Main.storyboard */; };
 		982C73D621ED34A300107C61 /* LavaAR.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 982C73D421ED34A300107C61 /* LavaAR.xcdatamodeld */; };
-		982C73D821ED34A400107C61 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 982C73D721ED34A400107C61 /* Assets.xcassets */; };
 		982C73DB21ED34A400107C61 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 982C73D921ED34A400107C61 /* LaunchScreen.storyboard */; };
 		982C73E621ED34A400107C61 /* LavaARTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982C73E521ED34A400107C61 /* LavaARTests.swift */; };
 		982C73F121ED34A400107C61 /* LavaARUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982C73F021ED34A400107C61 /* LavaARUITests.swift */; };
 		982C744A21EE8ED800107C61 /* Models.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 982C744921EE8ED800107C61 /* Models.scnassets */; };
 		9870FF5721EE963D00AC215F /* itemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9870FF5621EE963D00AC215F /* itemCell.swift */; };
-		98D3D19721F5D71200A4D534 /* Tower.scn in Resources */ = {isa = PBXBuildFile; fileRef = 98D3D19621F5D71200A4D534 /* Tower.scn */; };
+		98A751BC222C54DD00BE4573 /* game_music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 98A751BB222C54DD00BE4573 /* game_music.mp3 */; };
+		98A751BF222C54FE00BE4573 /* explosion_music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 98A751BD222C54FE00BE4573 /* explosion_music.mp3 */; };
+		98A751C0222C54FE00BE4573 /* shot_music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 98A751BE222C54FE00BE4573 /* shot_music.mp3 */; };
+		98A751C4222C5B3B00BE4573 /* object_destroyed_sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 98A751C2222C5B3B00BE4573 /* object_destroyed_sound.mp3 */; };
+		98A751C5222C5B3B00BE4573 /* gold_hit_sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 98A751C3222C5B3B00BE4573 /* gold_hit_sound.mp3 */; };
+		98A751C7222C622600BE4573 /* place_object_sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 98A751C6222C622600BE4573 /* place_object_sound.mp3 */; };
+		98A751C9222D189F00BE4573 /* missile_diffuse_green.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 98A751C8222D189F00BE4573 /* missile_diffuse_green.jpg */; };
+		98A751CF222D2A4300BE4573 /* Tower_Base_Deco_dif.png in Resources */ = {isa = PBXBuildFile; fileRef = 98A751CA222D2A4200BE4573 /* Tower_Base_Deco_dif.png */; };
+		98A751D0222D2A4300BE4573 /* Tower_Top_Deco_Dif.png in Resources */ = {isa = PBXBuildFile; fileRef = 98A751CB222D2A4300BE4573 /* Tower_Top_Deco_Dif.png */; };
+		98A751D1222D2A4300BE4573 /* Tower_Top_Dif.png in Resources */ = {isa = PBXBuildFile; fileRef = 98A751CC222D2A4300BE4573 /* Tower_Top_Dif.png */; };
+		98A751D2222D2A4300BE4573 /* Shield_Big_dif.png in Resources */ = {isa = PBXBuildFile; fileRef = 98A751CD222D2A4300BE4573 /* Shield_Big_dif.png */; };
+		98A751D3222D2A4300BE4573 /* Tower_Base_Dif.png in Resources */ = {isa = PBXBuildFile; fileRef = 98A751CE222D2A4300BE4573 /* Tower_Base_Dif.png */; };
+		98A751D5222D488C00BE4573 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 98A751D4222D488C00BE4573 /* Assets.xcassets */; };
+		98A751DC222D519C00BE4573 /* green_Blocks_AlbedoTransparency.png in Resources */ = {isa = PBXBuildFile; fileRef = 98A751DA222D519B00BE4573 /* green_Blocks_AlbedoTransparency.png */; };
+		98A751DD222D519C00BE4573 /* old_cube_A_F_AlbedoTransparency.png in Resources */ = {isa = PBXBuildFile; fileRef = 98A751DB222D519C00BE4573 /* old_cube_A_F_AlbedoTransparency.png */; };
+		98A751DF222D61D000BE4573 /* fine_colored_train_AlbedoTransparency.png in Resources */ = {isa = PBXBuildFile; fileRef = 98A751DE222D61D000BE4573 /* fine_colored_train_AlbedoTransparency.png */; };
+		98A751E1222D6DE400BE4573 /* missile_sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 98A751E0222D6DE400BE4573 /* missile_sound.mp3 */; };
+		EDBFC5DAEF4A1027B44C2BAC /* Pods_RevangeOfTheToysTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD54AF46B35829F0CEA95CD4 /* Pods_RevangeOfTheToysTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,16 +61,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A23CE53C8E4E650078CE962 /* Pods_RevangeOfTheToysUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RevangeOfTheToysUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		18AF67E2F37E3E274D38635C /* Pods-RevangeOfTheToysTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RevangeOfTheToysTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RevangeOfTheToysTests/Pods-RevangeOfTheToysTests.debug.xcconfig"; sourceTree = "<group>"; };
+		376AAA0D6E043E5430774736 /* Pods-RevangeOfTheToys.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RevangeOfTheToys.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RevangeOfTheToys/Pods-RevangeOfTheToys.debug.xcconfig"; sourceTree = "<group>"; };
+		7ECF13FE4868BF8630C05B2E /* Pods-RevangeOfTheToys.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RevangeOfTheToys.release.xcconfig"; path = "Pods/Target Support Files/Pods-RevangeOfTheToys/Pods-RevangeOfTheToys.release.xcconfig"; sourceTree = "<group>"; };
+		8E1BB7034E8EB3374FF066F3 /* Pods_RevangeOfTheToys.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RevangeOfTheToys.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9812FED222228C8600ECD323 /* WaveMachanics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveMachanics.swift; sourceTree = "<group>"; };
 		9812FED8222291DC00ECD323 /* WaveControlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveControlerProtocol.swift; sourceTree = "<group>"; };
 		9812FEDA2222D1D400ECD323 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		9812FEF7222BFCF400ECD323 /* ButtonsProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsProtocol.swift; sourceTree = "<group>"; };
 		981BA9E621F1DD3800B7DE0C /* ObjectFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectFactory.swift; sourceTree = "<group>"; };
 		982C73CA21ED34A300107C61 /* RevangeOfTheToys.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RevangeOfTheToys.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		982C73CD21ED34A300107C61 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		982C73CF21ED34A300107C61 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		982C73D221ED34A300107C61 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		982C73D521ED34A300107C61 /* LavaAR.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LavaAR.xcdatamodel; sourceTree = "<group>"; };
-		982C73D721ED34A400107C61 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		982C73DA21ED34A400107C61 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		982C73DC21ED34A400107C61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		982C73E121ED34A400107C61 /* RevangeOfTheToysTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RevangeOfTheToysTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,7 +86,27 @@
 		982C73F221ED34A400107C61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		982C744921EE8ED800107C61 /* Models.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Models.scnassets; sourceTree = "<group>"; };
 		9870FF5621EE963D00AC215F /* itemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = itemCell.swift; sourceTree = "<group>"; };
-		98D3D19621F5D71200A4D534 /* Tower.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Tower.scn; sourceTree = "<group>"; };
+		98A751BB222C54DD00BE4573 /* game_music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = game_music.mp3; sourceTree = "<group>"; };
+		98A751BD222C54FE00BE4573 /* explosion_music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = explosion_music.mp3; sourceTree = "<group>"; };
+		98A751BE222C54FE00BE4573 /* shot_music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = shot_music.mp3; sourceTree = "<group>"; };
+		98A751C2222C5B3B00BE4573 /* object_destroyed_sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = object_destroyed_sound.mp3; sourceTree = "<group>"; };
+		98A751C3222C5B3B00BE4573 /* gold_hit_sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = gold_hit_sound.mp3; sourceTree = "<group>"; };
+		98A751C6222C622600BE4573 /* place_object_sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = place_object_sound.mp3; sourceTree = "<group>"; };
+		98A751C8222D189F00BE4573 /* missile_diffuse_green.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = missile_diffuse_green.jpg; sourceTree = "<group>"; };
+		98A751CA222D2A4200BE4573 /* Tower_Base_Deco_dif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tower_Base_Deco_dif.png; sourceTree = "<group>"; };
+		98A751CB222D2A4300BE4573 /* Tower_Top_Deco_Dif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tower_Top_Deco_Dif.png; sourceTree = "<group>"; };
+		98A751CC222D2A4300BE4573 /* Tower_Top_Dif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tower_Top_Dif.png; sourceTree = "<group>"; };
+		98A751CD222D2A4300BE4573 /* Shield_Big_dif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Shield_Big_dif.png; sourceTree = "<group>"; };
+		98A751CE222D2A4300BE4573 /* Tower_Base_Dif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Tower_Base_Dif.png; sourceTree = "<group>"; };
+		98A751D4222D488C00BE4573 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		98A751DA222D519B00BE4573 /* green_Blocks_AlbedoTransparency.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = green_Blocks_AlbedoTransparency.png; sourceTree = "<group>"; };
+		98A751DB222D519C00BE4573 /* old_cube_A_F_AlbedoTransparency.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = old_cube_A_F_AlbedoTransparency.png; sourceTree = "<group>"; };
+		98A751DE222D61D000BE4573 /* fine_colored_train_AlbedoTransparency.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fine_colored_train_AlbedoTransparency.png; sourceTree = "<group>"; };
+		98A751E0222D6DE400BE4573 /* missile_sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = missile_sound.mp3; sourceTree = "<group>"; };
+		AD54AF46B35829F0CEA95CD4 /* Pods_RevangeOfTheToysTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RevangeOfTheToysTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6D5A642B4B50A563C1F722B /* Pods-RevangeOfTheToysUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RevangeOfTheToysUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RevangeOfTheToysUITests/Pods-RevangeOfTheToysUITests.release.xcconfig"; sourceTree = "<group>"; };
+		C9E95C24764993F207DBA4E6 /* Pods-RevangeOfTheToysUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RevangeOfTheToysUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RevangeOfTheToysUITests/Pods-RevangeOfTheToysUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		E8305100DA51B05F61AD9D4F /* Pods-RevangeOfTheToysTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RevangeOfTheToysTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RevangeOfTheToysTests/Pods-RevangeOfTheToysTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82F8FA7813DD29C32A40EE75 /* Pods_RevangeOfTheToys.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDBFC5DAEF4A1027B44C2BAC /* Pods_RevangeOfTheToysTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,16 +130,41 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				678EDFFBFD33395FD05260E6 /* Pods_RevangeOfTheToysUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7881F9864E210A552621764A /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				376AAA0D6E043E5430774736 /* Pods-RevangeOfTheToys.debug.xcconfig */,
+				7ECF13FE4868BF8630C05B2E /* Pods-RevangeOfTheToys.release.xcconfig */,
+				18AF67E2F37E3E274D38635C /* Pods-RevangeOfTheToysTests.debug.xcconfig */,
+				E8305100DA51B05F61AD9D4F /* Pods-RevangeOfTheToysTests.release.xcconfig */,
+				C9E95C24764993F207DBA4E6 /* Pods-RevangeOfTheToysUITests.debug.xcconfig */,
+				C6D5A642B4B50A563C1F722B /* Pods-RevangeOfTheToysUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		8A800323A9B35D4DEB2DB794 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8E1BB7034E8EB3374FF066F3 /* Pods_RevangeOfTheToys.framework */,
+				AD54AF46B35829F0CEA95CD4 /* Pods_RevangeOfTheToysTests.framework */,
+				0A23CE53C8E4E650078CE962 /* Pods_RevangeOfTheToysUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9812FED42222915700ECD323 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
 				9812FED8222291DC00ECD323 /* WaveControlerProtocol.swift */,
+				9812FEF7222BFCF400ECD323 /* ButtonsProtocol.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -123,6 +194,8 @@
 				982C73E421ED34A400107C61 /* LavaARTests */,
 				982C73EF21ED34A400107C61 /* LavaARUITests */,
 				982C73CB21ED34A300107C61 /* Products */,
+				7881F9864E210A552621764A /* Pods */,
+				8A800323A9B35D4DEB2DB794 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -139,18 +212,33 @@
 		982C73CC21ED34A300107C61 /* RevangeOfTheToys */ = {
 			isa = PBXGroup;
 			children = (
+				98A751E0222D6DE400BE4573 /* missile_sound.mp3 */,
+				98A751DE222D61D000BE4573 /* fine_colored_train_AlbedoTransparency.png */,
+				98A751DA222D519B00BE4573 /* green_Blocks_AlbedoTransparency.png */,
+				98A751DB222D519C00BE4573 /* old_cube_A_F_AlbedoTransparency.png */,
+				98A751CD222D2A4300BE4573 /* Shield_Big_dif.png */,
+				98A751CA222D2A4200BE4573 /* Tower_Base_Deco_dif.png */,
+				98A751CE222D2A4300BE4573 /* Tower_Base_Dif.png */,
+				98A751CB222D2A4300BE4573 /* Tower_Top_Deco_Dif.png */,
+				98A751CC222D2A4300BE4573 /* Tower_Top_Dif.png */,
+				98A751C8222D189F00BE4573 /* missile_diffuse_green.jpg */,
+				98A751C6222C622600BE4573 /* place_object_sound.mp3 */,
+				98A751C3222C5B3B00BE4573 /* gold_hit_sound.mp3 */,
+				98A751C2222C5B3B00BE4573 /* object_destroyed_sound.mp3 */,
+				98A751BB222C54DD00BE4573 /* game_music.mp3 */,
+				98A751BD222C54FE00BE4573 /* explosion_music.mp3 */,
+				98A751BE222C54FE00BE4573 /* shot_music.mp3 */,
+				98A751D4222D488C00BE4573 /* Assets.xcassets */,
 				9812FED72222919B00ECD323 /* Views */,
 				9812FED62222916F00ECD323 /* Objects */,
 				9812FED42222915700ECD323 /* Protocols */,
 				982C73CD21ED34A300107C61 /* AppDelegate.swift */,
 				982C73CF21ED34A300107C61 /* ViewController.swift */,
 				982C73D121ED34A300107C61 /* Main.storyboard */,
-				982C73D721ED34A400107C61 /* Assets.xcassets */,
 				982C73D921ED34A400107C61 /* LaunchScreen.storyboard */,
 				982C73DC21ED34A400107C61 /* Info.plist */,
 				982C73D421ED34A300107C61 /* LavaAR.xcdatamodeld */,
 				982C744921EE8ED800107C61 /* Models.scnassets */,
-				98D3D19621F5D71200A4D534 /* Tower.scn */,
 			);
 			path = RevangeOfTheToys;
 			sourceTree = "<group>";
@@ -180,9 +268,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 982C73F521ED34A400107C61 /* Build configuration list for PBXNativeTarget "RevangeOfTheToys" */;
 			buildPhases = (
+				E2AB2D5D9818BED73A4D2EA2 /* [CP] Check Pods Manifest.lock */,
 				982C73C621ED34A300107C61 /* Sources */,
 				982C73C721ED34A300107C61 /* Frameworks */,
 				982C73C821ED34A300107C61 /* Resources */,
+				DF57B1561B82FC5A50EA8DFE /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -197,6 +287,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 982C73F821ED34A400107C61 /* Build configuration list for PBXNativeTarget "RevangeOfTheToysTests" */;
 			buildPhases = (
+				CDB84B2C5461A621B24AB97F /* [CP] Check Pods Manifest.lock */,
 				982C73DD21ED34A400107C61 /* Sources */,
 				982C73DE21ED34A400107C61 /* Frameworks */,
 				982C73DF21ED34A400107C61 /* Resources */,
@@ -215,6 +306,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 982C73FB21ED34A400107C61 /* Build configuration list for PBXNativeTarget "RevangeOfTheToysUITests" */;
 			buildPhases = (
+				1D45E975CE0B4505CC13F331 /* [CP] Check Pods Manifest.lock */,
 				982C73E821ED34A400107C61 /* Sources */,
 				982C73E921ED34A400107C61 /* Frameworks */,
 				982C73EA21ED34A400107C61 /* Resources */,
@@ -277,10 +369,25 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98A751C9222D189F00BE4573 /* missile_diffuse_green.jpg in Resources */,
+				98A751CF222D2A4300BE4573 /* Tower_Base_Deco_dif.png in Resources */,
+				98A751D3222D2A4300BE4573 /* Tower_Base_Dif.png in Resources */,
+				98A751BF222C54FE00BE4573 /* explosion_music.mp3 in Resources */,
+				98A751C7222C622600BE4573 /* place_object_sound.mp3 in Resources */,
+				98A751C4222C5B3B00BE4573 /* object_destroyed_sound.mp3 in Resources */,
+				98A751DD222D519C00BE4573 /* old_cube_A_F_AlbedoTransparency.png in Resources */,
+				98A751D1222D2A4300BE4573 /* Tower_Top_Dif.png in Resources */,
+				98A751D2222D2A4300BE4573 /* Shield_Big_dif.png in Resources */,
+				98A751E1222D6DE400BE4573 /* missile_sound.mp3 in Resources */,
+				98A751DF222D61D000BE4573 /* fine_colored_train_AlbedoTransparency.png in Resources */,
+				98A751D0222D2A4300BE4573 /* Tower_Top_Deco_Dif.png in Resources */,
+				98A751DC222D519C00BE4573 /* green_Blocks_AlbedoTransparency.png in Resources */,
+				98A751C5222C5B3B00BE4573 /* gold_hit_sound.mp3 in Resources */,
 				982C73DB21ED34A400107C61 /* LaunchScreen.storyboard in Resources */,
-				98D3D19721F5D71200A4D534 /* Tower.scn in Resources */,
-				982C73D821ED34A400107C61 /* Assets.xcassets in Resources */,
+				98A751C0222C54FE00BE4573 /* shot_music.mp3 in Resources */,
+				98A751BC222C54DD00BE4573 /* game_music.mp3 in Resources */,
 				982C744A21EE8ED800107C61 /* Models.scnassets in Resources */,
+				98A751D5222D488C00BE4573 /* Assets.xcassets in Resources */,
 				982C73D321ED34A300107C61 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -301,6 +408,97 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		1D45E975CE0B4505CC13F331 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RevangeOfTheToysUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CDB84B2C5461A621B24AB97F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RevangeOfTheToysTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DF57B1561B82FC5A50EA8DFE /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-RevangeOfTheToys/Pods-RevangeOfTheToys-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SCLAlertView/SCLAlertView.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCLAlertView.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RevangeOfTheToys/Pods-RevangeOfTheToys-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E2AB2D5D9818BED73A4D2EA2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RevangeOfTheToys-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		982C73C621ED34A300107C61 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -311,6 +509,7 @@
 				982C73D021ED34A300107C61 /* ViewController.swift in Sources */,
 				981BA9E721F1DD3800B7DE0C /* ObjectFactory.swift in Sources */,
 				9812FED9222291DC00ECD323 /* WaveControlerProtocol.swift in Sources */,
+				9812FEF8222BFCF400ECD323 /* ButtonsProtocol.swift in Sources */,
 				982C73D621ED34A300107C61 /* LavaAR.xcdatamodeld in Sources */,
 				9812FEDB2222D1D400ECD323 /* Enums.swift in Sources */,
 				982C73CE21ED34A300107C61 /* AppDelegate.swift in Sources */,
@@ -486,6 +685,7 @@
 		};
 		982C73F621ED34A400107C61 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 376AAA0D6E043E5430774736 /* Pods-RevangeOfTheToys.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -504,6 +704,7 @@
 		};
 		982C73F721ED34A400107C61 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7ECF13FE4868BF8630C05B2E /* Pods-RevangeOfTheToys.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -522,6 +723,7 @@
 		};
 		982C73F921ED34A400107C61 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 18AF67E2F37E3E274D38635C /* Pods-RevangeOfTheToysTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -543,6 +745,7 @@
 		};
 		982C73FA21ED34A400107C61 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8305100DA51B05F61AD9D4F /* Pods-RevangeOfTheToysTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -564,6 +767,7 @@
 		};
 		982C73FC21ED34A400107C61 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C9E95C24764993F207DBA4E6 /* Pods-RevangeOfTheToysUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -584,6 +788,7 @@
 		};
 		982C73FD21ED34A400107C61 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C6D5A642B4B50A563C1F722B /* Pods-RevangeOfTheToysUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

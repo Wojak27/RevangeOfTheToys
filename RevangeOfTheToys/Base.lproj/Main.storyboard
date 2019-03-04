@@ -142,15 +142,23 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Looking for plane" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lke-BF-EJu">
+                                <rect key="frame" x="617" y="374" width="132" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="Lke-BF-EJu" firstAttribute="top" secondItem="lW9-zY-WWC" secondAttribute="bottom" constant="62" id="0Sh-Wl-sjf"/>
                             <constraint firstItem="xXq-S2-0S7" firstAttribute="top" secondItem="b71-h2-sFH" secondAttribute="bottom" constant="20" id="93w-7d-zyI"/>
                             <constraint firstItem="b71-h2-sFH" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="25" id="DKu-Bh-f3t"/>
                             <constraint firstItem="ZJO-6k-wRA" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="I5V-Z9-wRs"/>
                             <constraint firstItem="lW9-zY-WWC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="LVu-K5-jqK"/>
                             <constraint firstItem="ZJO-6k-wRA" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="OKg-4R-BNe"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="dnZ-SH-bU2" secondAttribute="trailing" constant="20" id="Ol5-Ad-gON"/>
+                            <constraint firstItem="Lke-BF-EJu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="SDY-yn-Uow"/>
                             <constraint firstItem="b71-h2-sFH" firstAttribute="top" secondItem="mym-XL-kXU" secondAttribute="bottom" constant="10" id="VjI-gZ-qze"/>
                             <constraint firstItem="CBj-r4-3Ea" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="WGM-Oi-1RQ"/>
                             <constraint firstItem="b71-h2-sFH" firstAttribute="top" secondItem="mym-XL-kXU" secondAttribute="bottom" constant="10" id="Waw-TU-B7Q"/>
@@ -173,6 +181,7 @@
                         <outlet property="addButton" destination="b71-h2-sFH" id="Unv-xk-1a1"/>
                         <outlet property="informationLabel" destination="lW9-zY-WWC" id="Yq0-vK-fRH"/>
                         <outlet property="itemsCollectionView" destination="xXq-S2-0S7" id="yZ2-6i-psD"/>
+                        <outlet property="lookingForPlaneLabel" destination="Lke-BF-EJu" id="vxG-j8-jSy"/>
                         <outlet property="minigunButton" destination="Ni2-pB-15B" id="ZNQ-km-sB9"/>
                         <outlet property="nextWaveButton" destination="bE8-R2-gry" id="pWk-gb-gDl"/>
                         <outlet property="objectsToPlaceLabel" destination="dnZ-SH-bU2" id="c56-ee-w1t"/>
