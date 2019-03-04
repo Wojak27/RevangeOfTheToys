@@ -15,5 +15,7 @@ enum BitMaskCategory: Int {
     case target = 3
     case pointer = 4
     case object = 5
+    case missile = 6
+    case minigunBullet = 7
     
 }

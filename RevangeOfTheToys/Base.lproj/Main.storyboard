@@ -79,12 +79,6 @@
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Looking for surface" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lW9-zY-WWC">
-                                <rect key="frame" x="609" y="501.5" width="148" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mym-XL-kXU">
                                 <rect key="frame" x="25" y="794" width="50" height="50"/>
                                 <color key="backgroundColor" red="0.24504306910000001" green="0.72824102639999999" blue="0.42360460760000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -122,6 +116,26 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ni2-pB-15B">
+                                <rect key="frame" x="1246" y="427" width="100" height="100"/>
+                                <color key="backgroundColor" red="1" green="0.1519643792" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="9Ae-jC-MiI"/>
+                                    <constraint firstAttribute="width" constant="100" id="DGd-I1-D4S"/>
+                                </constraints>
+                                <state key="normal" title="Shoot minigun">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="shootMinigun:" destination="BYZ-38-t0r" eventType="touchUpInside" id="FvV-6x-U5r"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Looking for surface" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lW9-zY-WWC">
+                                <rect key="frame" x="609" y="291" width="148" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -137,7 +151,9 @@
                             <constraint firstItem="xXq-S2-0S7" firstAttribute="bottom" secondItem="ZJO-6k-wRA" secondAttribute="bottom" id="d6w-Qp-XzH"/>
                             <constraint firstItem="bE8-R2-gry" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="fAT-QA-ht8"/>
                             <constraint firstItem="bE8-R2-gry" firstAttribute="centerX" secondItem="lW9-zY-WWC" secondAttribute="centerX" id="giU-6P-Gzx"/>
-                            <constraint firstItem="lW9-zY-WWC" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="kzA-wZ-g41"/>
+                            <constraint firstItem="lW9-zY-WWC" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-210.5" id="kzA-wZ-g41"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Ni2-pB-15B" secondAttribute="trailing" constant="20" id="mQM-T3-Xgu"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Ni2-pB-15B" secondAttribute="bottom" constant="497" id="nRs-ZQ-K16"/>
                             <constraint firstItem="xXq-S2-0S7" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="oI9-00-S7x"/>
                             <constraint firstItem="ZJO-6k-wRA" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="olQ-vD-liD"/>
                             <constraint firstItem="CBj-r4-3Ea" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="wgz-GX-YOr"/>
@@ -149,6 +165,7 @@
                         <outlet property="addButton" destination="b71-h2-sFH" id="Unv-xk-1a1"/>
                         <outlet property="informationLabel" destination="lW9-zY-WWC" id="Yq0-vK-fRH"/>
                         <outlet property="itemsCollectionView" destination="xXq-S2-0S7" id="yZ2-6i-psD"/>
+                        <outlet property="minigunButton" destination="Ni2-pB-15B" id="ZNQ-km-sB9"/>
                         <outlet property="nextWaveButton" destination="bE8-R2-gry" id="pWk-gb-gDl"/>
                         <outlet property="sceneView" destination="ZJO-6k-wRA" id="dXB-8b-3ib"/>
                         <outlet property="shootButton" destination="mym-XL-kXU" id="Cb9-Cu-Grc"/>

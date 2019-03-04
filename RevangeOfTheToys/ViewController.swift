@@ -6,9 +6,9 @@ import UIKit
 import ARKit
 import AVFoundation
 
-class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, WaveControlerProtocol, SCNPhysicsContactDelegate, EnableShootProtocol {
+class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, WaveControlerProtocol, SCNPhysicsContactDelegate, EnableShootProtocol, MissileLounched {
 
-    let itemsArray: [String] = ["box", "cylinder", "tower"]
+    let itemsArray: [String] = ["letter_box", "textured_cylinder", "tower"]
     
     var groundPlane: SCNNode?
     var planeOriginPosition: SCNVector3?
@@ -25,6 +25,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     var explosionSoundEffectPlayer: AVAudioPlayer?
     var goldHitSoundEffectPlayer: AVAudioPlayer?
     var objectDestroyedSoundEffectPlayer: AVAudioPlayer?
+    var missileLaunchSoundEffectPlayer: AVAudioPlayer?
     var placeObjectSoundEffectPlayer: AVAudioPlayer?
     var enemiesHitArray: [String] = []
     var waveCompleted = false
@@ -40,12 +41,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     @IBOutlet weak var shootButton: UIButton!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var nextWaveButton: UIButton!
+    @IBOutlet weak var minigunButton: UIButton!
     
     let configuration = ARWorldTrackingConfiguration()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, .showPhysicsShapes]
+        //self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, .showBoundingBoxes, .showPhysicsShapes]
+        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, .showBoundingBoxes]
         
         //for detecting horizontal surfaces
         self.configuration.planeDetection = .horizontal
@@ -76,6 +79,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         
         addButton.layer.cornerRadius = 10
         addButton.clipsToBounds = true
+        
+        minigunButton.layer.cornerRadius = 30
+        minigunButton.clipsToBounds = true
     }
     
     func prepareUI(){
@@ -83,6 +89,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         addButton.isHidden = true
         shootButton.isHidden = true
         itemsCollectionView.isHidden = true
+        minigunButton.isHidden = true
         nextWaveButton.isHidden = false
         print(self.itemsCollectionView.contentSize.width)
     }
@@ -149,12 +156,30 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         self.sceneView.scene.rootNode.addChildNode(pointer!)
     }
     
+    func doesNodeExist(name: String)-> Bool{
+        var exists = false
+        self.sceneView.scene.rootNode.enumerateChildNodes { (childNode, _) in
+            if let nodeName = childNode.name{
+                if(nodeName.contains(name)){
+                    exists = true
+                }
+            }
+            
+            
+        }
+        return exists
+    }
+    
     func createPointer(type: String)-> SCNNode{
         
         var node:SCNNode?
 
         if(type == "tower"){
             node = objectFactory.createObject(ofType: "cylinder_tower")
+        }else if type == "letter_box"{
+            node = objectFactory.createObject(ofType: "box")
+        }else if type == "textured_cylinder"{
+            node = objectFactory.createObject(ofType: "cylinder")
         }else{
             node = objectFactory.createObject(ofType: type)
         }
@@ -169,17 +194,33 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
 
     //rule of thumb: every horisontal/ vertical surface should have a single anchor
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
-        guard let pointOfView = sceneView.pointOfView else {return}
-        let transform = pointOfView.transform
-        let orientation = SCNVector3(-transform.m31,-transform.m32,-transform.m33)
-        let location = SCNVector3(transform.m41,transform.m42,transform.m43)
-        let currentPositionOfCamera = addVectors(left: orientation, right: location)
+        let posOr = getCurrentPositionOfCamera()
+        let currentPositionOfCamera = posOr[0]
+        let orientation = posOr[1]
         DispatchQueue.main.async {
             if(self.hasPointer){
                 self.updatePointer(currentPositionOfCamera: currentPositionOfCamera, orientation: orientation)
             }
+            if(self.doesNodeExist(name: "Airstrike")){
+                self.minigunButton.isHidden = false
+                self.informationLabel.text = "Missile Lounched!"
+                
+            }else{
+                self.minigunButton.isHidden = true
+                self.informationLabel.text = ""
+            }
             
         }
+        
+    }
+    
+    func getCurrentPositionOfCamera()-> [SCNVector3]{
+        guard let pointOfView = sceneView.pointOfView else {return []}
+        let transform = pointOfView.transform
+        let orientation = SCNVector3(-transform.m31,-transform.m32,-transform.m33)
+        let location = SCNVector3(transform.m41,transform.m42,transform.m43)
+        let currentPositionOfCamera = addVectors(left: orientation, right: location)
+        return [currentPositionOfCamera, orientation]
     }
     
     
@@ -200,6 +241,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         // init waveController
         self.waveController = WaveMechanics(rootNode: self.sceneView.scene.rootNode)
         self.waveController.delegate = self
+        self.waveController.delegateMissile = self
         
         DispatchQueue.main.async {
             self.informationLabel.text = ""
@@ -248,6 +290,28 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
         let nodeA = contact.nodeA
         let nodeB = contact.nodeB
+        
+        checkminigunBulletHitMissile(nodeA: nodeA, nodeB: nodeB)
+        checkBulletHitEnemy(nodeA: nodeA, nodeB: nodeB, contact: contact)
+        checkEnemyHitObject(nodeA: nodeA, nodeB: nodeB)
+        checkEnemyReachedGold(nodeA: nodeA, nodeB: nodeB)
+        checkPointerOverObject(nodeA: nodeA, nodeB: nodeB)
+        
+
+    }
+    
+    func checkminigunBulletHitMissile(nodeA: SCNNode, nodeB: SCNNode){
+        
+        //i the bullet hits the missile
+        if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.missile.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.minigunBullet.rawValue || nodeA.physicsBody?.categoryBitMask == BitMaskCategory.missile.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.minigunBullet.rawValue{
+            nodeA.removeFromParentNode()
+            nodeB.removeFromParentNode()
+            playEnemyHit()
+        }
+    }
+    
+    
+    func checkBulletHitEnemy(nodeA: SCNNode, nodeB: SCNNode, contact: SCNPhysicsContact){
         if nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue{
             self.target = nodeA
         }else if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue{
@@ -261,7 +325,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         }
         
         //i the bullet hits the target
-        if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue || nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue{
+        if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue || nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue || nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.minigunBullet.rawValue || nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.minigunBullet.rawValue{
             let confetti = SCNParticleSystem(named: "Models.scnassets/Confetti.scnp", inDirectory: nil)
             confetti?.loops = false
             confetti?.particleLifeSpan = 4
@@ -274,11 +338,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
             nodeB.removeFromParentNode()
             playEnemyHit()
         }
-        checkEnemyHitObject(nodeA: nodeA, nodeB: nodeB)
-        checkEnemyReachedGold(nodeA: nodeA, nodeB: nodeB)
-        checkPointerOverObject(nodeA: nodeA, nodeB: nodeB)
-        
-
     }
     
     func checkPointerOverObject(nodeA: SCNNode, nodeB: SCNNode){
@@ -307,6 +366,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         //if target reached the gold
         if  nodeA.physicsBody?.categoryBitMask == BitMaskCategory.gold.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue ||
             nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.gold.rawValue{
+            
+            var isAirstrike = false
             if let name = nodeA.name {
                 print("##############nameA")
                 print(name)
@@ -314,6 +375,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
                     if(enemiesHitArray.contains(name)){
                         return
                     }else{
+                        if  name.contains("Airstrike"){
+                            isAirstrike = true
+                        }
                         enemiesHitArray.append(name)
                     }
                 }
@@ -326,6 +390,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
                     if(enemiesHitArray.contains(name)){
                         return
                     }else{
+                        if  name.contains("Airstrike"){
+                            isAirstrike = true
+                        }
                         enemiesHitArray.append(name)
                     }
                 }
@@ -333,10 +400,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
             
             DispatchQueue.main.async {
                 //Do UI Code here.
-                self.goldHealth = self.goldHealth - 10
-                if(self.goldHealth <= 0){
-                    self.showAlertGameOver()
+                if(isAirstrike){
+                    self.goldHealth = 0
+                }else{
+                    self.goldHealth = self.goldHealth - 10
+                    if(self.goldHealth <= 0){
+                        self.showAlertGameOver()
+                    }
                 }
+                
             }
             print("health -10")
             print("health")
@@ -374,7 +446,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         
         let convertedPointerPos = toPlaneCoordinates(node: pointer!)
         print(convertedPointerPos)
-        object.position = SCNVector3(convertedPointerPos.x, groundPlane!.geometry!.boundingBox.max.y + object.geometry!.boundingBox.max.y, convertedPointerPos.z)
+        //object.position = SCNVector3(convertedPointerPos.x, groundPlane!.geometry!.boundingBox.max.y + object.geometry!.boundingBox.max.y, convertedPointerPos.z)
+        if(object.name!.contains("shootable") || object.name!.contains("letter_box") || object.name!.contains("cylinder")){
+            object.position = SCNVector3(convertedPointerPos.x, groundPlane!.geometry!.boundingBox.max.y , convertedPointerPos.z)
+        }else{
+            object.position = SCNVector3(convertedPointerPos.x, groundPlane!.geometry!.boundingBox.max.y + object.geometry!.boundingBox.max.y, convertedPointerPos.z)
+        }
         
         
         object.eulerAngles = pointer!.eulerAngles
@@ -399,6 +476,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
                 }
             }})
     }
+    @IBAction func shootMinigun(_ sender: Any) {
+        let posOr = getCurrentPositionOfCamera()
+        let position = posOr[0]
+        let orientation = posOr[1]
+        var power = Float(50)
+        let bullet = SCNNode(geometry: SCNSphere(radius: 0.05))
+        bullet.geometry?.firstMaterial?.diffuse.contents = UIColor.black
+        bullet.position = position
+        let body = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(node: bullet, options: nil))
+        body.isAffectedByGravity = false
+        bullet.physicsBody = body
+        bullet.physicsBody?.applyForce(SCNVector3(orientation.x * power,orientation.y * power,orientation.z * power), asImpulse: true)
+        bullet.physicsBody?.categoryBitMask = BitMaskCategory.minigunBullet.rawValue
+        bullet.physicsBody?.contactTestBitMask = ( BitMaskCategory.missile.rawValue|BitMaskCategory.target.rawValue)
+        self.sceneView.scene.rootNode.addChildNode(bullet)
+    }
     @IBAction func shootAction(_ sender: Any) {
         
         selectedItem = "pointer"
@@ -409,7 +502,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         let location = SCNVector3(transform.m41,transform.m42,transform.m43)
         let currentPositionOfCamera = addVectors(left: orientation, right: location)
         
-        let bullet = SCNNode(geometry: SCNSphere(radius: 0.005))
+        let bullet = SCNNode(geometry: SCNSphere(radius: 0.01))
         bullet.name = "bullet"
         bullet.geometry?.firstMaterial?.diffuse.contents = UIColor.red
         
@@ -480,13 +573,13 @@ extension ViewController{
     func createGroundPlane(planeAnchor: ARPlaneAnchor)->SCNNode{
         
         let groundNode = SCNNode(geometry: SCNCylinder(radius: 2, height: 0.05))
-        groundNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "grass_circle")
+        groundNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "StreetCarpetTexture")
         groundNode.geometry?.firstMaterial?.isDoubleSided = true
         groundNode.geometry?.firstMaterial?.transparency = 1
         groundNode.name = "planeNode"
         let groundBodyShape = SCNPhysicsShape(geometry: groundNode.geometry!)
-        let body = SCNPhysicsBody(type: .kinematic, shape: groundBodyShape)
-        groundNode.physicsBody = body
+        let body = SCNPhysicsBody(type: .static, shape: groundBodyShape)
+        //groundNode.physicsBody = body
         groundNode.position = SCNVector3(planeAnchor.center.x,planeAnchor.center.y,planeAnchor.center.z)
 
         let goldNode = createGoldNode()
@@ -523,7 +616,13 @@ extension ViewController{
     
     func isCompleted() {
         waveCompleted = true
-        showWaveCompletedAlert()
+        //showWaveCompletedAlert()
+    }
+    
+    func missileLounched() {
+        informationLabel.text = "Missile Lounched!"
+        minigunButton.isHidden = false
+        playMissileLounch()
     }
     func showWaveCompletedAlert(){
         let alert = UIAlertController(title: "Wave \(waveController.waveNumber)", message: "Completed!", preferredStyle: UIAlertController.Style.alert)
@@ -562,6 +661,26 @@ extension ViewController{
             
             guard let explosionSoundEffectPlayer = explosionSoundEffectPlayer else { return }
             explosionSoundEffectPlayer.play()
+            
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func playMissileLounch(){
+        guard let url = Bundle.main.url(forResource: "missile_sound", withExtension: "mp3") else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            missileLaunchSoundEffectPlayer = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            
+            /* iOS 10 and earlier require the following line:
+             player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileTypeMPEGLayer3) */
+            
+            guard let missileLaunchSoundEffectPlayer = missileLaunchSoundEffectPlayer else { return }
+            missileLaunchSoundEffectPlayer.play()
             
         } catch let error {
             print(error.localizedDescription)

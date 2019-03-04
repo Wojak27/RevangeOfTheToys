@@ -21,32 +21,37 @@ class ObjectFactory{
         var object = SCNNode()
         if(type == "box"){
             object = createBox()
+        }else if(type == "letter_box"){
+            object = createLetterBox()
+        }else if(type == "textured_cylinder"){
+            object = createTexturedCylinder()
         }else if(type == "cylinder_tower"){
             object = createCylinder(radious: 0.07)
         }else if(type == "cylinder"){
             object = createCylinder(radious: 0.05)
         }else if(type == "tower"){
-            object = createTower()
+            object = createToyTower()
         }else if(type == "pointer"){
             object = createPointer()
         }else if(type == "gold"){
             object = createGold()
         }else if(type == "enemy"){
-            object = createCar()
+            //object = createCar()
+            object = createTrain()
+        }else if(type == "missile"){
+            object = createMissile()
         }
         
         return object
     }
     
     public func createObjectWithFriction(object: SCNNode)-> SCNNode{
-        let bodyShape = SCNPhysicsShape(geometry: object.geometry!)
-        let body = SCNPhysicsBody(type: .kinematic, shape: bodyShape)
+        let body = object.physicsBody!
         body.restitution = 0
         body.mass = 1000
         body.rollingFriction = 1
         body.angularDamping = 1
         body.isAffectedByGravity = false
-        object.physicsBody?.categoryBitMask = BitMaskCategory.object.rawValue
         
         body.damping = 10
         body.friction = 10
@@ -102,6 +107,26 @@ class ObjectFactory{
     private func createGold()->SCNNode{
         let scene = SCNScene(named: "Models.scnassets/Gold.scn")
         let frame = (scene?.rootNode.childNode(withName: "body", recursively: false))!
+        
+        return frame
+    }
+    
+    private func createToyTower()->SCNNode{
+        let scene = SCNScene(named: "Models.scnassets/ToyTower.scn")
+        let frame = (scene?.rootNode.childNode(withName: "Tower", recursively: false))!
+        frame.scale = SCNVector3(x: 0.0003, y: 0.0003, z: 0.0003)
+        frame.position = SCNVector3(-1, 0, 0)
+        frame.name = "shootable"
+        frame.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNCylinder(radius: 0.07, height: 0.2), options: nil))
+        delegate!.enableShootButton()
+        return frame
+    }
+    
+    private func createMissile()->SCNNode{
+        let scene = SCNScene(named: "Models.scnassets/Missile.scn")
+        let frame = (scene?.rootNode.childNode(withName: "missile", recursively: false))!
+        frame.scale = SCNVector3(x: 0.00001, y: 0.00001, z: 0.00001)
+        frame.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNCylinder(radius: 0.1, height: 0.2), options: nil))
         return frame
     }
     
@@ -113,6 +138,45 @@ class ObjectFactory{
         chassis.physicsBody = body
         
         return chassis
+        
+    }
+    
+    private func createTrain()-> SCNNode{
+        let scene = SCNScene(named: "Models.scnassets/Train.scn")
+        let chassis = (scene?.rootNode.childNode(withName: "Train", recursively: false))!
+        chassis.scale = SCNVector3(x: 0.0001, y: 0.0001, z: 0.0001)
+        let body = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(node: chassis, options: [SCNPhysicsShape.Option.keepAsCompound: true]))
+        chassis.physicsBody = body
+        
+        
+        return chassis
+        
+    }
+    
+    private func createLetterBox()-> SCNNode{
+        let scene = SCNScene(named: "Models.scnassets/LetterBox.scn")
+        let frame = (scene?.rootNode.childNode(withName: "LetterBox", recursively: false))!
+        let scale = Float(0.00017)
+        frame.scale = SCNVector3(x: scale, y: scale, z: scale)
+        frame.position = SCNVector3(-1, 0, 0)
+        frame.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0), options: nil))
+        frame.name = "letter_box"
+        
+        return frame
+        
+        
+    }
+    
+    private func createTexturedCylinder()-> SCNNode{
+        let scene = SCNScene(named: "Models.scnassets/Cylinder.scn")
+        let frame = (scene?.rootNode.childNode(withName: "Node", recursively: false))!
+        let scale = Float(0.00021)
+        frame.scale = SCNVector3(x: scale, y: scale, z: scale)
+        frame.position = SCNVector3(-1, 0, 0)
+        frame.name = "cylinder"
+        frame.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: SCNCylinder(radius: 0.05, height: 0.1), options: nil))
+        
+        return frame
         
     }
 

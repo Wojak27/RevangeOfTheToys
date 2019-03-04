@@ -21,6 +21,7 @@ class WaveMechanics{
     var parentNode: SCNNode!
     var objectFactory: ObjectFactory!
     weak var delegate : WaveControlerProtocol? = nil
+    weak var delegateMissile : MissileLounched? = nil
     
     
     init(rootNode: SCNNode){
@@ -35,7 +36,7 @@ class WaveMechanics{
         repeatsAirstrike = 1 * waveNumber
         parentNode = node
         let ranadomTimeInterval = Double.random(in: 2.0 ..< 10)
-        Timer.scheduledTimer(withTimeInterval: ranadomTimeInterval, repeats: true, block: spawnNewEnemyAirstrike)
+        Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: spawnNewEnemyAirstrike)
         Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true, block: spawnNewEnemyCar)
     }
     
@@ -48,29 +49,30 @@ class WaveMechanics{
             return
         }
         //let box = SCNNode(geometry: SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0))
-        let box = objectFactory.createObject(ofType: "cylinder")
+        let box = objectFactory.createObject(ofType: "missile")
         box.name = "target_Airstrike_\(currentRepeatAirstrike)"
         print(box.name!)
         //box.geometry?.firstMaterial?.diffuse.contents = UIColor.blue
         //box.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: box.geometry!))
-        box.physicsBody?.categoryBitMask = BitMaskCategory.target.rawValue
-        box.physicsBody?.contactTestBitMask = (BitMaskCategory.bullet.rawValue | BitMaskCategory.gold.rawValue)
+        box.physicsBody?.categoryBitMask = BitMaskCategory.missile.rawValue
+        box.physicsBody?.contactTestBitMask = ( BitMaskCategory.gold.rawValue | BitMaskCategory.minigunBullet.rawValue)
         
         // spawning at random position form the plane middle
         let fraction = Double.random(in: 0 ..< 2)
-        let r = 1.0;
+        let r = 5.0;
         let x = r * sin(fraction * Double.pi)
         let z = r * cos(fraction * Double.pi)
-        let y = Double.random(in: 0.4 ..< 3) //enemies height
+        let theta = Double.random(in: 0.2..<Double.pi/2)
+        let y = r * sin(theta) //enemies height
         
         box.position = SCNVector3(x,y,z)
-        box.eulerAngles = SCNVector3(0,  Double.pi - fraction * Double.pi, Double.pi)
-        //box.eulerAngles = SCNVector3(0,-(x + z),0)
+        box.eulerAngles = SCNVector3(theta + Double.pi/4,  Double.pi - fraction * Double.pi, Double.pi)
         parentNode.addChildNode(box)
         
         SCNTransaction.begin()
-        self.moveEnemy(node: box, position: box.position, duration: 5)
+        self.moveEnemy(node: box, position: box.position, duration: 15)
         SCNTransaction.commit()
+        delegateMissile!.missileLounched()
         
         currentRepeatAirstrike += 1
     }
@@ -95,7 +97,7 @@ class WaveMechanics{
         //box.geometry?.firstMaterial?.diffuse.contents = UIColor.blue
         //box.physicsBody = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(geometry: box.geometry!))
         box.physicsBody?.categoryBitMask = BitMaskCategory.target.rawValue
-        box.physicsBody?.contactTestBitMask = (BitMaskCategory.bullet.rawValue | BitMaskCategory.gold.rawValue)
+        box.physicsBody?.contactTestBitMask = (BitMaskCategory.bullet.rawValue | BitMaskCategory.gold.rawValue|BitMaskCategory.minigunBullet.rawValue)
         addAnimation(node: box)
         
         // spawning at random position form the plane middle
@@ -106,7 +108,8 @@ class WaveMechanics{
         let y = 0.1 //enemies height
         
         box.position = SCNVector3(x,y,z)
-        box.eulerAngles = SCNVector3(0,  Double.pi - fraction * Double.pi, Double.pi)
+        //box.eulerAngles = SCNVector3(0,  Double.pi - fraction * Double.pi, Double.pi)
+        box.eulerAngles = SCNVector3(0,  fraction * Double.pi - Double.pi, 0)
         //box.eulerAngles = SCNVector3(0,-(x + z),0)
         parentNode.addChildNode(box)
         

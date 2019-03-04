@@ -11,3 +11,7 @@ import Foundation
 @objc protocol WaveControlerProtocol {
     func isCompleted()
 }
+
+@objc protocol MissileLounched {
+    func missileLounched()
+}
