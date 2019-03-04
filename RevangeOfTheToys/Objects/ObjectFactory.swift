@@ -17,17 +17,22 @@ class ObjectFactory{
     }
     
     public func createObject(ofType type: String)-> SCNNode{
+        
         var object = SCNNode()
         if(type == "box"){
             object = createBox()
+        }else if(type == "cylinder_tower"){
+            object = createCylinder(radious: 0.07)
         }else if(type == "cylinder"){
-            object = createCylinder()
+            object = createCylinder(radious: 0.05)
         }else if(type == "tower"){
             object = createTower()
         }else if(type == "pointer"){
             object = createPointer()
         }else if(type == "gold"){
             object = createGold()
+        }else if(type == "enemy"){
+            object = createCar()
         }
         
         return object
@@ -56,8 +61,13 @@ class ObjectFactory{
         
         object.physicsBody = SCNPhysicsBody.static()
         object.physicsBody?.categoryBitMask = BitMaskCategory.pointer.rawValue
-        object.physicsBody?.categoryBitMask = BitMaskCategory.pointer.rawValue
         object.physicsBody?.contactTestBitMask = BitMaskCategory.object.rawValue
+        return object
+    }
+    
+    public func createStatic(object: SCNNode)-> SCNNode{
+        
+        object.physicsBody = SCNPhysicsBody.static()
         return object
     }
     
@@ -70,9 +80,9 @@ class ObjectFactory{
         return object
     }
     
-    private func createCylinder()-> SCNNode{
+    private func createCylinder(radious: CGFloat)-> SCNNode{
         let object = SCNNode()
-        object.geometry = SCNCylinder(radius: 0.05, height: 0.1)
+        object.geometry = SCNCylinder(radius: radious, height: 0.1)
         object.geometry?.firstMaterial?.diffuse.contents = UIColor.blue
         object.position = SCNVector3(-1, 0, 0)
         object.name = "cylinder"
@@ -93,6 +103,17 @@ class ObjectFactory{
         let scene = SCNScene(named: "Models.scnassets/Gold.scn")
         let frame = (scene?.rootNode.childNode(withName: "body", recursively: false))!
         return frame
+    }
+    
+    private func createCar()-> SCNNode{
+        let scene = SCNScene(named: "Models.scnassets/Car.scn")
+        let chassis = (scene?.rootNode.childNode(withName: "chassis", recursively: false))!
+        
+        let body = SCNPhysicsBody(type: .kinematic, shape: SCNPhysicsShape(node: chassis, options: [SCNPhysicsShape.Option.keepAsCompound: true]))
+        chassis.physicsBody = body
+        
+        return chassis
+        
     }
 
     

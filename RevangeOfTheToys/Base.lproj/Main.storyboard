@@ -113,6 +113,15 @@
                                     <action selector="addEnemy:" destination="BYZ-38-t0r" eventType="touchUpInside" id="tKv-dT-mwI"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start first wave" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CBj-r4-3Ea">
+                                <rect key="frame" x="20" y="40" width="116" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="Ucn-aH-KZd"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -122,6 +131,7 @@
                             <constraint firstItem="lW9-zY-WWC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="LVu-K5-jqK"/>
                             <constraint firstItem="ZJO-6k-wRA" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="OKg-4R-BNe"/>
                             <constraint firstItem="b71-h2-sFH" firstAttribute="top" secondItem="mym-XL-kXU" secondAttribute="bottom" constant="10" id="VjI-gZ-qze"/>
+                            <constraint firstItem="CBj-r4-3Ea" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="WGM-Oi-1RQ"/>
                             <constraint firstItem="b71-h2-sFH" firstAttribute="top" secondItem="mym-XL-kXU" secondAttribute="bottom" constant="10" id="Waw-TU-B7Q"/>
                             <constraint firstItem="mym-XL-kXU" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="25" id="Xaz-lP-Ote"/>
                             <constraint firstItem="xXq-S2-0S7" firstAttribute="bottom" secondItem="ZJO-6k-wRA" secondAttribute="bottom" id="d6w-Qp-XzH"/>
@@ -130,6 +140,7 @@
                             <constraint firstItem="lW9-zY-WWC" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="kzA-wZ-g41"/>
                             <constraint firstItem="xXq-S2-0S7" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="oI9-00-S7x"/>
                             <constraint firstItem="ZJO-6k-wRA" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="olQ-vD-liD"/>
+                            <constraint firstItem="CBj-r4-3Ea" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="wgz-GX-YOr"/>
                             <constraint firstItem="ZJO-6k-wRA" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="y5D-KZ-xIY"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -141,6 +152,7 @@
                         <outlet property="nextWaveButton" destination="bE8-R2-gry" id="pWk-gb-gDl"/>
                         <outlet property="sceneView" destination="ZJO-6k-wRA" id="dXB-8b-3ib"/>
                         <outlet property="shootButton" destination="mym-XL-kXU" id="Cb9-Cu-Grc"/>
+                        <outlet property="waveNumberLabel" destination="CBj-r4-3Ea" id="bKG-ge-2uR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

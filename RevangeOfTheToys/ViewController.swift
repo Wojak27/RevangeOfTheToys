@@ -4,6 +4,7 @@
 
 import UIKit
 import ARKit
+import AVFoundation
 
 class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, WaveControlerProtocol, SCNPhysicsContactDelegate, EnableShootProtocol {
 
@@ -17,10 +18,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     var selectedItem: String?
     var waveController: WaveMechanics!
     var objectFactory: ObjectFactory!
-    var target: SCNNode?    
+    var target: SCNNode?
+    var goldHealth:Int = 100
+    var player: AVAudioPlayer?
+    var shootSoundEffectPlayer: AVAudioPlayer?
+    var explosionSoundEffectPlayer: AVAudioPlayer?
+    var goldHitSoundEffectPlayer: AVAudioPlayer?
+    var objectDestroyedSoundEffectPlayer: AVAudioPlayer?
+    var placeObjectSoundEffectPlayer: AVAudioPlayer?
+    var enemiesHitArray: [String] = []
+    var waveCompleted = false
+    var pointerYPosition: Float!
     
     @IBOutlet weak var sceneView: ARSCNView!
     
+    @IBOutlet weak var waveNumberLabel: UILabel!
     @IBOutlet weak var informationLabel: UILabel! //label in the middle
     @IBOutlet weak var itemsCollectionView: UICollectionView! //collectionview
     
@@ -33,7 +45,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints, .showPhysicsShapes]
+        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, .showPhysicsShapes]
         
         //for detecting horizontal surfaces
         self.configuration.planeDetection = .horizontal
@@ -71,7 +83,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         addButton.isHidden = true
         shootButton.isHidden = true
         itemsCollectionView.isHidden = true
-        nextWaveButton.isHidden = true
+        nextWaveButton.isHidden = false
         print(self.itemsCollectionView.contentSize.width)
     }
 
@@ -102,9 +114,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         })
     }
     
+    func findSCNNode(withName name: String)-> SCNNode{
+        var nodeRet = SCNNode()
+        self.sceneView.scene.rootNode.enumerateChildNodes({(node,_)in
+            if let childNodeName = node.name{
+                if childNodeName.contains(name){
+                    nodeRet = node
+                }
+            }
+        })
+        return nodeRet
+    }
+    
     // TODO: Complete the UI
-    // TODO: Sounds?
-    // TODO: Disable/hide buttons if not needed
     // TODO: Menu with scoreboard
     // TODO: Quit button
     // TODO: 3d Models
@@ -116,8 +138,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         let rotationAngle = Float( atan((orientation.x/abs(orientation.x + orientation.z))/(orientation.z/(abs(orientation.x + orientation.z)))))
 //        if there is a plane, display it on its surface
         if let plane = self.groundPlane{
-            pointer!.position = SCNVector3(currentPositionOfCamera.x, plane.parent!.position.y + plane.geometry!.boundingBox.max.y + pointer!.geometry!.boundingBox.max.y, currentPositionOfCamera.z)
+            pointerYPosition = plane.parent!.position.y + plane.geometry!.boundingBox.max.y + pointer!.geometry!.boundingBox.max.y
+            pointer!.position = SCNVector3(currentPositionOfCamera.x,pointerYPosition , currentPositionOfCamera.z)
             pointer!.eulerAngles = SCNVector3(0,rotationAngle , 0)
+            
         }else{
             pointer!.position = currentPositionOfCamera
             pointer!.eulerAngles = SCNVector3(0,rotationAngle , 0)
@@ -130,7 +154,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         var node:SCNNode?
 
         if(type == "tower"){
-            node = objectFactory.createObject(ofType: "cylinder")
+            node = objectFactory.createObject(ofType: "cylinder_tower")
         }else{
             node = objectFactory.createObject(ofType: type)
         }
@@ -170,6 +194,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         //if it does not create one
         let groundNode = createGroundPlane(planeAnchor: planeAnchor)
         groundPlane = groundNode
+        //pointerYPosition = groundNode.parent!.position.y + groundNode.geometry!.boundingBox.max.y + pointer!.geometry!.boundingBox.max.y
         
         node.addChildNode(groundNode)
         // init waveController
@@ -206,6 +231,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
 
     }
     
+    
+    
     //is called if the device makes an error and adds additional anchore for the same surface
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
         //informationLabel.text = "Looking for a surface"
@@ -233,15 +260,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
             self.target = nodeB
         }
         
-//        if let name = nodeA.name {
-//            print("nodeA name")
-//            print(name)
-//        }
-//        if let name = nodeB.name {
-//            print("nodeB name")
-//            print(name)
-//        }
-        
         //i the bullet hits the target
         if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue || nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.bullet.rawValue{
             let confetti = SCNParticleSystem(named: "Models.scnassets/Confetti.scnp", inDirectory: nil)
@@ -252,14 +270,24 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
             confettiNode.addParticleSystem(confetti!)
             confettiNode.position = contact.contactPoint
             self.sceneView.scene.rootNode.addChildNode(confettiNode)
-            target?.removeFromParentNode()
+            nodeA.removeFromParentNode()
+            nodeB.removeFromParentNode()
+            playEnemyHit()
         }
+        checkEnemyHitObject(nodeA: nodeA, nodeB: nodeB)
+        checkEnemyReachedGold(nodeA: nodeA, nodeB: nodeB)
+        checkPointerOverObject(nodeA: nodeA, nodeB: nodeB)
         
+
+    }
+    
+    func checkPointerOverObject(nodeA: SCNNode, nodeB: SCNNode){
         //if the pointer is over an object
         if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.object.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue || nodeA.physicsBody?.categoryBitMask == BitMaskCategory.object.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue{
-            print("over!")
+            
             if(nodeA.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue){
                 nodeA.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+                pointerYPosition = pointerYPosition + Float(nodeB.frame.height)
             }else if(nodeB.physicsBody?.categoryBitMask == BitMaskCategory.pointer.rawValue){
                 nodeB.geometry?.firstMaterial?.diffuse.contents = UIColor.red
             }
@@ -273,19 +301,93 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
                 self.addButton.isEnabled = true
             }
         }
-
+    }
+    
+    func checkEnemyReachedGold(nodeA: SCNNode, nodeB: SCNNode){
+        //if target reached the gold
+        if  nodeA.physicsBody?.categoryBitMask == BitMaskCategory.gold.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue ||
+            nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.gold.rawValue{
+            if let name = nodeA.name {
+                print("##############nameA")
+                print(name)
+                if(name.contains("target")){
+                    if(enemiesHitArray.contains(name)){
+                        return
+                    }else{
+                        enemiesHitArray.append(name)
+                    }
+                }
+                
+            }
+            //enemy
+            print(enemiesHitArray)
+            if let name = nodeB.name {
+                if(name.contains("target")){
+                    if(enemiesHitArray.contains(name)){
+                        return
+                    }else{
+                        enemiesHitArray.append(name)
+                    }
+                }
+            }
+            
+            DispatchQueue.main.async {
+                //Do UI Code here.
+                self.goldHealth = self.goldHealth - 10
+                if(self.goldHealth <= 0){
+                    self.showAlertGameOver()
+                }
+            }
+            print("health -10")
+            print("health")
+            print(goldHealth)
+            
+            if(nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue){
+                nodeA.removeFromParentNode()
+            }else if(nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue){
+                nodeB.removeFromParentNode()
+            }
+            DispatchQueue.main.async {
+                //Do UI Code here.
+                self.addButton.isEnabled = false
+            }
+            let goldNode = findSCNNode(withName: "goldNode")
+            deleteSCNNode(named: "healthNode")
+            goldNode.addChildNode(createTextNode())
+            playGoldHit()
+        }
+    }
+    
+    func checkEnemyHitObject(nodeA : SCNNode, nodeB: SCNNode){
+        //if target reached the gold
+        if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.object.rawValue && nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue || nodeA.physicsBody?.categoryBitMask == BitMaskCategory.object.rawValue && nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue{
+            nodeA.removeFromParentNode()
+            nodeB.removeFromParentNode()
+            playObjectDestroyed()
+        }
+        
     }
 
     @IBAction func addObject(_ sender: Any) {
         let object = objectFactory.createObjectWithFriction(object: objectFactory.createObject(ofType: selectedItem!))
         // z is for height and is negative up
-        object.position = SCNVector3(pointer!.position.x - groundPlane!.parent!.position.x, groundPlane!.geometry!.boundingBox.max.y + object.geometry!.boundingBox.max.y,pointer!.position.z - groundPlane!.parent!.position.z)
+        
+        let convertedPointerPos = toPlaneCoordinates(node: pointer!)
+        print(convertedPointerPos)
+        object.position = SCNVector3(convertedPointerPos.x, groundPlane!.geometry!.boundingBox.max.y + object.geometry!.boundingBox.max.y, convertedPointerPos.z)
+        
+        
         object.eulerAngles = pointer!.eulerAngles
+        playPlaceObject()
 
         groundPlane!.addChildNode(object)
         
     }
     @IBAction func addEnemy(_ sender: Any) {
+        enemiesHitArray = []
+        shootButton.isEnabled = true
+        addButton.isEnabled = false
+        waveNumberLabel.text = "Current wave: \(waveController.waveNumber)"
         waveController.initNextWave(node: groundPlane!)
     }
     
@@ -307,7 +409,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         let location = SCNVector3(transform.m41,transform.m42,transform.m43)
         let currentPositionOfCamera = addVectors(left: orientation, right: location)
         
-        let shootingForce = Float(2)
         let bullet = SCNNode(geometry: SCNSphere(radius: 0.005))
         bullet.name = "bullet"
         bullet.geometry?.firstMaterial?.diffuse.contents = UIColor.red
@@ -324,34 +425,42 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         
         for var node in nodes {
             let bulletToShoot = bullet.clone()
-            shootBullet(node: node, bullet: bulletToShoot, shootingForce: shootingForce, currentPositionOfCamera: currentPositionOfCamera)
+            shootBullet(node: node, bullet: bulletToShoot, currentPositionOfCamera: currentPositionOfCamera)
         }
     }
     
     
-    private func shootBullet(node: SCNNode, bullet: SCNNode, shootingForce: Float, currentPositionOfCamera: SCNVector3){
+    private func shootBullet(node: SCNNode, bullet: SCNNode, currentPositionOfCamera: SCNVector3){
         
         //can use convertPosition(_:to:) to convert position from one node to another
-        bullet.position = SCNVector3(x: node.position.x, y: groundPlane!.geometry!.boundingBox.max.y + node.position.y + node.geometry!.boundingBox.max.y + bullet.geometry!.boundingSphere.radius + 0.3, z: node.position.z)
-        //            bullet.position = SCNVector3(x: groundPlane!.parent!.position.x, y: groundPlane!.parent!.position.y + 0.5, z: groundPlane!.parent!.position.z)
+        //let y = groundPlane!.geometry!.boundingBox.max.y + node.position.y + node.geometry!.boundingBox.max.y + bullet.geometry!.boundingSphere.radius + 0.3
+        let y = Float(0.3)
+        playShot()
+        //start position of the bullet
+        bullet.position = SCNVector3(x: node.position.x, y: y, z: node.position.z)
         
-        print("pointer parent position")
-        print(toPlaneCoordinates(node: pointer!, toNode: groundPlane!))
-        print("pointer position")
-        print(pointer!.position)
-        let pointerPosInPlaneCoord = SCNVector3(pointer!.position.x - groundPlane!.parent!.position.x, 0.5,pointer!.position.z - groundPlane!.parent!.position.z)
+        let convertedPointerPos = toPlaneCoordinates(node: pointer!)
+        //pointer position in realation to the plane
+        let pointerPosInPlaneCoord = SCNVector3(convertedPointerPos.x, 0.3,convertedPointerPos.z)
         
-        let forceVec = SCNVector3((pointerPosInPlaneCoord.x - node.position.x) * shootingForce, (groundPlane!.parent!.position.y) * shootingForce, (pointerPosInPlaneCoord.z - node.position.z) * shootingForce)
+        let distanceToPointerFromTower = SCNVector3((pointerPosInPlaneCoord.x - node.position.x) * 10, 0, (pointerPosInPlaneCoord.z - node.position.z) * 10)
+        //distance to the pointer form the current tower
+        let distanceToPointer = sqrt(pow((distanceToPointerFromTower.x), 2) + pow((distanceToPointerFromTower.z), 2))
+        print("distance to pointer")
+        print(distanceToPointer)
+        deleteSCNNode(named: "distance")
+        let time = Float(2.0)
+        let distanceNode = SCNNode(geometry: SCNBox(width: 0.01, height: 0.01, length: CGFloat(distanceToPointer), chamferRadius: 0))
+        distanceNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+        distanceNode.position = node.position
+        distanceNode.name = "distance"
+        
+        //node is the tower we shoot from
+        let forceVec = SCNVector3((distanceToPointerFromTower.x)/time, 0, (distanceToPointerFromTower.z)/time)
         bullet.physicsBody?.applyForce(forceVec, asImpulse: true)
         bullet.physicsBody?.categoryBitMask = BitMaskCategory.bullet.rawValue
         bullet.physicsBody?.contactTestBitMask = BitMaskCategory.target.rawValue
         groundPlane!.addChildNode(bullet)
-        print("shoot!")
-    }
-    
-    @IBAction func resetPlaneAction(_ sender: Any) {
-        groundPlane?.removeFromParentNode()
-        groundPlane = nil
     }
     
     func addVectors(left: SCNVector3, right: SCNVector3) -> SCNVector3{
@@ -364,41 +473,185 @@ extension ViewController{
         itemsCollectionView.isHidden = false
         addButton.isHidden = false
         nextWaveButton.isHidden = false
+        waveNumberLabel.isHidden = false
         print(self.itemsCollectionView.contentSize.width)
+        playMusicLoop()
     }
     func createGroundPlane(planeAnchor: ARPlaneAnchor)->SCNNode{
         
         let groundNode = SCNNode(geometry: SCNCylinder(radius: 2, height: 0.05))
         groundNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "grass_circle")
         groundNode.geometry?.firstMaterial?.isDoubleSided = true
-        groundNode.geometry?.firstMaterial?.transparency = 0.5
+        groundNode.geometry?.firstMaterial?.transparency = 1
         groundNode.name = "planeNode"
         let groundBodyShape = SCNPhysicsShape(geometry: groundNode.geometry!)
         let body = SCNPhysicsBody(type: .kinematic, shape: groundBodyShape)
         groundNode.physicsBody = body
         groundNode.position = SCNVector3(planeAnchor.center.x,planeAnchor.center.y,planeAnchor.center.z)
 
-        let goldNode = objectFactory.createObject(ofType: "gold")
-        goldNode.position = SCNVector3(0,0.1,0)
-        goldNode.name = "goldNode"
-        goldNode.physicsBody = SCNPhysicsBody.static()
+        let goldNode = createGoldNode()
         groundNode.addChildNode(goldNode)
         return groundNode
     }
     
+    func createGoldNode()-> SCNNode{
+        let goldNode = objectFactory.createObject(ofType: "gold")
+        goldNode.position = SCNVector3(0,0.05,0)
+        goldNode.name = "goldNode"
+        goldNode.addChildNode(createTextNode())
+        goldNode.physicsBody = SCNPhysicsBody.static()
+        goldNode.physicsBody?.categoryBitMask = BitMaskCategory.gold.rawValue
+        goldNode.physicsBody?.contactTestBitMask = BitMaskCategory.target.rawValue
+        return goldNode
+    }
+    
+    func createTextNode() -> SCNNode {
+        let text = SCNText(string: "You have \(goldHealth) gold", extrusionDepth: 0.1)
+        text.font = UIFont.systemFont(ofSize: 1.0)
+        text.flatness = 0.01
+        text.firstMaterial?.diffuse.contents = UIColor.white
+        
+        let textNode = SCNNode(geometry: text)
+        textNode.name = "healthNode"
+        
+        let fontSize = Float(0.04)
+        textNode.scale = SCNVector3(fontSize, fontSize, fontSize)
+        textNode.position = SCNVector3(-0.1,0.2,0)
+        
+        return textNode
+    }
+    
     func isCompleted() {
-        let alert = UIAlertController(title: "Wave", message: "Completed!", preferredStyle: UIAlertController.Style.alert)
+        waveCompleted = true
+        showWaveCompletedAlert()
+    }
+    func showWaveCompletedAlert(){
+        let alert = UIAlertController(title: "Wave \(waveController.waveNumber)", message: "Completed!", preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+        addButton.isEnabled = true
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func showAlertGameOver(){
+        let alert = UIAlertController(title: "Play Again?", message: "You've lost!", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertAction.Style.default, handler: nil))
+        addButton.isEnabled = true
         self.present(alert, animated: true, completion: nil)
     }
     
     func enableShootButton() {
-        print("Enabled!")
         shootButton.isHidden = false
+        shootButton.isEnabled = false
     }
     
-    func toPlaneCoordinates(node: SCNNode, toNode: SCNNode) -> SCNVector3{
-        return node.convertPosition(node.position, to: toNode)
+    func toPlaneCoordinates(node: SCNNode) -> SCNVector3{
+        return self.sceneView.scene.rootNode.convertPosition(node.position, to: groundPlane!)
+    }
+    
+    func playEnemyHit(){
+        guard let url = Bundle.main.url(forResource: "explosion_music", withExtension: "mp3") else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            explosionSoundEffectPlayer = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            
+            /* iOS 10 and earlier require the following line:
+             player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileTypeMPEGLayer3) */
+            
+            guard let explosionSoundEffectPlayer = explosionSoundEffectPlayer else { return }
+            explosionSoundEffectPlayer.play()
+            
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func playShot(){
+        guard let url = Bundle.main.url(forResource: "shot_music", withExtension: "mp3") else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            shootSoundEffectPlayer = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            
+            guard let shootSoundEffectPlayer = shootSoundEffectPlayer else { return }
+            shootSoundEffectPlayer.play()
+            
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func playGoldHit(){
+        guard let url = Bundle.main.url(forResource: "gold_hit_sound", withExtension: "mp3") else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            goldHitSoundEffectPlayer = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            
+            guard let goldHitSoundEffectPlayer = goldHitSoundEffectPlayer else { return }
+            goldHitSoundEffectPlayer.play()
+            
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func playObjectDestroyed(){
+        guard let url = Bundle.main.url(forResource: "object_destroyed_sound", withExtension: "mp3") else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            objectDestroyedSoundEffectPlayer = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            
+            guard let objectDestroyedSoundEffectPlayer = objectDestroyedSoundEffectPlayer else { return }
+            objectDestroyedSoundEffectPlayer.play()
+            
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func playPlaceObject(){
+        guard let url = Bundle.main.url(forResource: "place_object_sound", withExtension: "mp3") else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            placeObjectSoundEffectPlayer = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            
+            guard let placeObjectSoundEffectPlayer = placeObjectSoundEffectPlayer else { return }
+            placeObjectSoundEffectPlayer.play()
+            
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func playMusicLoop() {
+        guard let url = Bundle.main.url(forResource: "game_music", withExtension: "mp3") else { return }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            
+            guard let player = player else { return }
+            player.numberOfLoops = -1
+            player.play()
+            
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
 }
 
