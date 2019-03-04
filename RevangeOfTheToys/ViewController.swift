@@ -10,6 +10,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
 
     let itemsArray: [String] = ["letter_box", "textured_cylinder", "tower"]
     
+    
+    var objectsToPlace = 3
     var groundPlane: SCNNode?
     var planeOriginPosition: SCNVector3?
     var informationLabelText = "Looking for surface"
@@ -33,6 +35,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     
     @IBOutlet weak var sceneView: ARSCNView!
     
+    @IBOutlet weak var objectsToPlaceLabel: UILabel!
     @IBOutlet weak var waveNumberLabel: UILabel!
     @IBOutlet weak var informationLabel: UILabel! //label in the middle
     @IBOutlet weak var itemsCollectionView: UICollectionView! //collectionview
@@ -87,10 +90,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     func prepareUI(){
         editButtons()
         addButton.isHidden = true
+        objectsToPlaceLabel.isHidden = true
+        waveNumberLabel.isHidden = true
         shootButton.isHidden = true
         itemsCollectionView.isHidden = true
         minigunButton.isHidden = true
-        nextWaveButton.isHidden = false
+        nextWaveButton.isHidden = true
         print(self.itemsCollectionView.contentSize.width)
     }
 
@@ -205,6 +210,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
                 self.minigunButton.isHidden = false
                 self.informationLabel.text = "Missile Lounched!"
                 
+            }else if(!self.doesNodeExist(name: "target") && self.waveCompleted){
+                self.onCompletedWave()
             }else{
                 self.minigunButton.isHidden = true
                 self.informationLabel.text = ""
@@ -212,6 +219,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
             
         }
         
+    }
+    func onCompletedWave(){
+        showWaveCompletedAlert()
+        waveCompleted = false
+        objectsToPlace += 3
+        enableUI()
     }
     
     func getCurrentPositionOfCamera()-> [SCNVector3]{
@@ -441,6 +454,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     }
 
     @IBAction func addObject(_ sender: Any) {
+        if(objectsToPlace == 0){
+            showNoMoreObjectsAlert()
+            return
+        }
+        objectsToPlace -= 1
+        updateObjectsToPlaceLabel()
         let object = objectFactory.createObjectWithFriction(object: objectFactory.createObject(ofType: selectedItem!))
         // z is for height and is negative up
         
@@ -460,12 +479,20 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         groundPlane!.addChildNode(object)
         
     }
+    func updateObjectsToPlaceLabel(){
+        objectsToPlaceLabel.text = "Objects to place: \(objectsToPlace)"
+    }
     @IBAction func addEnemy(_ sender: Any) {
+        if(!doesNodeExist(name: "shootable")){
+            showNoTowersAlert()
+            return
+        }
         enemiesHitArray = []
         shootButton.isEnabled = true
         addButton.isEnabled = false
         waveNumberLabel.text = "Current wave: \(waveController.waveNumber)"
         waveController.initNextWave(node: groundPlane!)
+        startWaveSequenceUI()
     }
     
     func handleShoot(){
@@ -481,7 +508,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         let position = posOr[0]
         let orientation = posOr[1]
         var power = Float(50)
-        let bullet = SCNNode(geometry: SCNSphere(radius: 0.05))
+        let bullet = SCNNode(geometry: SCNSphere(radius: 0.008))
         bullet.geometry?.firstMaterial?.diffuse.contents = UIColor.black
         bullet.position = position
         let body = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(node: bullet, options: nil))
@@ -565,10 +592,26 @@ extension ViewController{
     func enableUI(){
         itemsCollectionView.isHidden = false
         addButton.isHidden = false
+        addButton.isEnabled = true
         nextWaveButton.isHidden = false
         waveNumberLabel.isHidden = false
+        shootButton.isHidden = true
+        objectsToPlaceLabel.isHidden = false
+        updateObjectsToPlaceLabel()
+        selectedItem = itemsArray[0]
         print(self.itemsCollectionView.contentSize.width)
         playMusicLoop()
+    }
+    
+    func startWaveSequenceUI(){
+        addButton.isHidden = true
+        selectedItem = "pointer"
+        itemsCollectionView.isHidden = true
+        nextWaveButton.isHidden = true
+        objectsToPlaceLabel.isHidden = true
+        if(doesNodeExist(name: "shootable")){
+            shootButton.isHidden = false
+        }
     }
     func createGroundPlane(planeAnchor: ARPlaneAnchor)->SCNNode{
         
@@ -627,6 +670,19 @@ extension ViewController{
     func showWaveCompletedAlert(){
         let alert = UIAlertController(title: "Wave \(waveController.waveNumber)", message: "Completed!", preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func showNoMoreObjectsAlert(){
+        let alert = UIAlertController(title: "Ooops!", message: "Can't place more objects!", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    func showNoTowersAlert(){
+        let alert = UIAlertController(title: "Nothing to shot with", message: "Add some towers!", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
         addButton.isEnabled = true
         self.present(alert, animated: true, completion: nil)
     }
@@ -639,8 +695,8 @@ extension ViewController{
     }
     
     func enableShootButton() {
-        shootButton.isHidden = false
-        shootButton.isEnabled = false
+        //shootButton.isHidden = false
+        //shootButton.isEnabled = false
     }
     
     func toPlaneCoordinates(node: SCNNode) -> SCNVector3{

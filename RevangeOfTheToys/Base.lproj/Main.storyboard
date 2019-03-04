@@ -136,6 +136,12 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Objects to place" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dnZ-SH-bU2">
+                                <rect key="frame" x="1221" y="55" width="125" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -144,12 +150,14 @@
                             <constraint firstItem="ZJO-6k-wRA" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="I5V-Z9-wRs"/>
                             <constraint firstItem="lW9-zY-WWC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="LVu-K5-jqK"/>
                             <constraint firstItem="ZJO-6k-wRA" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="OKg-4R-BNe"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="dnZ-SH-bU2" secondAttribute="trailing" constant="20" id="Ol5-Ad-gON"/>
                             <constraint firstItem="b71-h2-sFH" firstAttribute="top" secondItem="mym-XL-kXU" secondAttribute="bottom" constant="10" id="VjI-gZ-qze"/>
                             <constraint firstItem="CBj-r4-3Ea" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="WGM-Oi-1RQ"/>
                             <constraint firstItem="b71-h2-sFH" firstAttribute="top" secondItem="mym-XL-kXU" secondAttribute="bottom" constant="10" id="Waw-TU-B7Q"/>
                             <constraint firstItem="mym-XL-kXU" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="25" id="Xaz-lP-Ote"/>
                             <constraint firstItem="xXq-S2-0S7" firstAttribute="bottom" secondItem="ZJO-6k-wRA" secondAttribute="bottom" id="d6w-Qp-XzH"/>
                             <constraint firstItem="bE8-R2-gry" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="fAT-QA-ht8"/>
+                            <constraint firstItem="dnZ-SH-bU2" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="35" id="frG-R2-yPP"/>
                             <constraint firstItem="bE8-R2-gry" firstAttribute="centerX" secondItem="lW9-zY-WWC" secondAttribute="centerX" id="giU-6P-Gzx"/>
                             <constraint firstItem="lW9-zY-WWC" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-210.5" id="kzA-wZ-g41"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Ni2-pB-15B" secondAttribute="trailing" constant="20" id="mQM-T3-Xgu"/>
@@ -167,6 +175,7 @@
                         <outlet property="itemsCollectionView" destination="xXq-S2-0S7" id="yZ2-6i-psD"/>
                         <outlet property="minigunButton" destination="Ni2-pB-15B" id="ZNQ-km-sB9"/>
                         <outlet property="nextWaveButton" destination="bE8-R2-gry" id="pWk-gb-gDl"/>
+                        <outlet property="objectsToPlaceLabel" destination="dnZ-SH-bU2" id="c56-ee-w1t"/>
                         <outlet property="sceneView" destination="ZJO-6k-wRA" id="dXB-8b-3ib"/>
                         <outlet property="shootButton" destination="mym-XL-kXU" id="Cb9-Cu-Grc"/>
                         <outlet property="waveNumberLabel" destination="CBj-r4-3Ea" id="bKG-ge-2uR"/>
