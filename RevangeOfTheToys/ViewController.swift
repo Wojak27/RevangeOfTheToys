@@ -224,6 +224,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
 
     //rule of thumb: every horisontal/ vertical surface should have a single anchor
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        guard let pointOfView = sceneView.pointOfView else {return}
+        print("point of view \(pointOfView)")
         let posOr = getCurrentPositionOfCamera()
         let currentPositionOfCamera = posOr[0]
         let orientation = posOr[1]
@@ -237,17 +239,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
                 
             }else if(!self.doesNodeExist(name: "target") && self.waveCompleted){
                 self.onCompletedWave()
+            }else if(self.doesNodeExist(name: "target")){
+                //self.showPointerToEnemy()
             }else{
                 self.noMissile()
             }
             
         }
         
-    }
-    
-    func noMissile(){
-        self.minigunButton.isHidden = true
-        self.informationLabel.text = ""
     }
     //////////////////////first triggered -----------------------
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
@@ -299,6 +298,35 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
                 informationLabel.text = informationLabelText
             }
         }
+    }
+    
+    //TODO: Need fix
+    func showPointerToEnemy(){
+        let currentPositionAndOrientation = getCurrentPositionOfCamera()
+        let currentPositionOfCamera = currentPositionAndOrientation[0]
+        
+        self.sceneView.scene.rootNode.enumerateChildNodes { (childNode, _) in
+            if let nodeName = childNode.name{
+                if(nodeName.contains("target")){
+                    deleteSCNNode(named: "arrow")
+                    let coordOfTargetInSceneView = self.groundPlane!.convertPosition(childNode.position, to: self.sceneView.scene.rootNode)
+                    let coordOfTargetWithPointOfViewAsCenter = SCNVector3(coordOfTargetInSceneView.x - currentPositionOfCamera.x, coordOfTargetInSceneView.y - currentPositionOfCamera.y, coordOfTargetInSceneView.z - currentPositionOfCamera.z)
+                    print("coordinates to target: \(coordOfTargetWithPointOfViewAsCenter)")
+                    let arrowNode = SCNNode(geometry: SCNCylinder(radius: 0.1, height: 0.2))
+                    arrowNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+                    arrowNode.position = currentPositionOfCamera
+                    arrowNode.name = "arrow"
+                    sceneView.scene.rootNode.addChildNode(arrowNode)
+                }
+            }
+            
+            
+        }
+    }
+    
+    func noMissile(){
+        self.minigunButton.isHidden = true
+        self.informationLabel.text = ""
     }
     
     func initGroundPlane(){
@@ -529,14 +557,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         startWaveSequenceUI()
     }
     
-    func handleShoot(){
-        self.sceneView.scene.rootNode.enumerateChildNodes({(node,_)in
-            if let nodeName = node.name{
-                if nodeName.contains("shootable"){
-                    
-                }
-            }})
-    }
     @IBAction func shootMinigun(_ sender: Any) {
         let posOr = getCurrentPositionOfCamera()
         let position = posOr[0]
@@ -565,7 +585,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         
         let bullet = SCNNode(geometry: SCNSphere(radius: 0.01))
         bullet.name = "bullet"
-        bullet.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+        bullet.geometry?.firstMaterial?.diffuse.contents = UIColor.black
         
         let body = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(geometry: bullet.geometry!, options: nil))
         body.isAffectedByGravity = true
@@ -586,32 +606,39 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     
     private func shootBullet(node: SCNNode, bullet: SCNNode, currentPositionOfCamera: SCNVector3){
         
-        //can use convertPosition(_:to:) to convert position from one node to another
-        //let y = groundPlane!.geometry!.boundingBox.max.y + node.position.y + node.geometry!.boundingBox.max.y + bullet.geometry!.boundingSphere.radius + 0.3
-        let y = Float(0.3)
+        //can use convertPosition(_:to:) to convert position from one node to
+        
         playShot()
-        //start position of the bullet
-        bullet.position = SCNVector3(x: node.position.x, y: y, z: node.position.z)
         
         let convertedPointerPos = toPlaneCoordinates(node: pointer!)
         //pointer position in realation to the plane
         let pointerPosInPlaneCoord = SCNVector3(convertedPointerPos.x, 0.3,convertedPointerPos.z)
         
         let distanceToPointerFromTower = SCNVector3((pointerPosInPlaneCoord.x - node.position.x) * 10, 0, (pointerPosInPlaneCoord.z - node.position.z) * 10)
-        //distance to the pointer form the current tower
-        let distanceToPointer = sqrt(pow((distanceToPointerFromTower.x), 2) + pow((distanceToPointerFromTower.z), 2))
-        print("distance to pointer")
-        print(distanceToPointer)
-        deleteSCNNode(named: "distance")
         let time = Float(2.0)
-        let distanceNode = SCNNode(geometry: SCNBox(width: 0.01, height: 0.01, length: CGFloat(distanceToPointer), chamferRadius: 0))
-        distanceNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
-        distanceNode.position = node.position
-        distanceNode.name = "distance"
         
         //node is the tower we shoot from
         let forceVec = SCNVector3((distanceToPointerFromTower.x)/time, 0, (distanceToPointerFromTower.z)/time)
+        let forceAngle = atan2(forceVec.z, forceVec.x)
         bullet.physicsBody?.applyForce(forceVec, asImpulse: true)
+        let towerTop = node.childNode(withName: "Tower_Top", recursively: false)
+        
+        if let top = towerTop{
+            let v1 = top.eulerAngles
+            let v2 = forceVec
+            let angle = Float.pi - forceAngle - node.eulerAngles.y - Float.pi/2
+            print("top vec: \(v1)")
+            print("force vec: \(v2)")
+            print("force angle: \(forceAngle)")
+            print("angle: \(angle)")
+            top.eulerAngles = SCNVector3(top.eulerAngles.x, angle, top.eulerAngles.z)
+        }
+        let y = Float(0.25)
+        let r = Float(0.05)
+        let dx = r * cos(forceAngle)
+        let dz = r * sin(forceAngle)
+        //start position of the bullet
+        bullet.position = SCNVector3(x: node.position.x + dx, y: y, z: node.position.z + dz)
         bullet.physicsBody?.categoryBitMask = BitMaskCategory.bullet.rawValue
         bullet.physicsBody?.contactTestBitMask = BitMaskCategory.target.rawValue
         groundPlane!.addChildNode(bullet)

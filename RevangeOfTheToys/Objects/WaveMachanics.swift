@@ -17,7 +17,6 @@ class WaveMechanics{
     var waveNumber = 0
     var currentRepeatCar = 1
     var currentRepeatAirstrike = 1
-    var root: SCNNode!
     var parentNode: SCNNode!
     var objectFactory: ObjectFactory!
     weak var delegate : WaveControlerProtocol? = nil
@@ -25,7 +24,6 @@ class WaveMechanics{
     
     
     init(rootNode: SCNNode){
-        self.root = rootNode
         objectFactory = ObjectFactory()
     }
     
