@@ -332,6 +332,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     func initGroundPlane(){
         
         guard self.planeNode != nil else {return}
+        self.sceneView.debugOptions = []
         groundPlane = createGroundPlane(planeAnchor: self.planeAnchor!)
         
         planeNode!.addChildNode(groundPlane!)
