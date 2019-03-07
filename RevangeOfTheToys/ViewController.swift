@@ -33,9 +33,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     var enemiesHitArray: [String] = []
     var waveCompleted = false
     var pointerYPosition: Float!
+    var planeAnchor: ARPlaneAnchor?
+    var planeNode: SCNNode?
     
     @IBOutlet weak var sceneView: ARSCNView!
     
+    @IBOutlet weak var startLogo: UIImageView!
+    @IBOutlet weak var startView: UIView!
     @IBOutlet weak var objectsToPlaceLabel: UILabel!
     @IBOutlet weak var waveNumberLabel: UILabel!
     @IBOutlet weak var informationLabel: UILabel! //label in the middle
@@ -43,6 +47,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
     
     @IBOutlet weak var lookingForPlaneLabel: UILabel!
     //buttons
+    @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var shootButton: UIButton!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var nextWaveButton: UIButton!
@@ -64,10 +69,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         self.itemsCollectionView.dataSource = self
         self.itemsCollectionView.delegate = self
         self.sceneView.scene.physicsWorld.contactDelegate = self
-        self.selectedItem = itemsArray[0]
         self.objectFactory = ObjectFactory()
         self.objectFactory.delegate = self
-        
         prepareUI()
         
         // Do any additional setup after loading the view, typically from a nib.
@@ -76,29 +79,49 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         return itemsArray.count
     }
     func editButtons(){
-        nextWaveButton.layer.cornerRadius = 10
+        nextWaveButton.layer.cornerRadius = 20
         nextWaveButton.clipsToBounds = true
         
-        shootButton.layer.cornerRadius = 10
+        shootButton.layer.cornerRadius = 100
         shootButton.clipsToBounds = true
         
-        addButton.layer.cornerRadius = 10
+        addButton.layer.cornerRadius = 100
         addButton.clipsToBounds = true
         
-        minigunButton.layer.cornerRadius = 30
+        minigunButton.layer.cornerRadius = 100
         minigunButton.clipsToBounds = true
     }
     
     func prepareUI(){
         editButtons()
         addButton.isHidden = true
+        self.selectedItem = itemsArray[0]
         objectsToPlaceLabel.isHidden = true
         waveNumberLabel.isHidden = true
         shootButton.isHidden = true
         itemsCollectionView.isHidden = true
         minigunButton.isHidden = true
         nextWaveButton.isHidden = true
-        print(self.itemsCollectionView.contentSize.width)
+        objectsToPlaceLabel.isHidden = true
+        playButton.isHidden = true
+        startLogo.isHidden = false
+    }
+    
+    func enableUI(){
+        itemsCollectionView.isHidden = false
+        addButton.isHidden = false
+        addButton.isEnabled = true
+        nextWaveButton.isHidden = false
+        waveNumberLabel.isHidden = false
+        shootButton.isHidden = true
+        objectsToPlaceLabel.isHidden = false
+        updateObjectsToPlaceLabel()
+        selectedItem = itemsArray[0]
+        objectsToPlaceLabel.isHidden = false
+        playButton.isHidden = true
+        startLogo.isHidden = true
+        startView.isHidden = true
+        playMusicLoop()
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -215,53 +238,31 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
             }else if(!self.doesNodeExist(name: "target") && self.waveCompleted){
                 self.onCompletedWave()
             }else{
-                self.minigunButton.isHidden = true
-                self.informationLabel.text = ""
+                self.noMissile()
             }
             
         }
         
     }
-    func onCompletedWave(){
-        showWaveCompletedAlert()
-        waveCompleted = false
-        objectsToPlace += 3
-        enableUI()
+    
+    func noMissile(){
+        self.minigunButton.isHidden = true
+        self.informationLabel.text = ""
     }
-    
-    func getCurrentPositionOfCamera()-> [SCNVector3]{
-        guard let pointOfView = sceneView.pointOfView else {return []}
-        let transform = pointOfView.transform
-        let orientation = SCNVector3(-transform.m31,-transform.m32,-transform.m33)
-        let location = SCNVector3(transform.m41,transform.m42,transform.m43)
-        let currentPositionOfCamera = addVectors(left: orientation, right: location)
-        return [currentPositionOfCamera, orientation]
-    }
-    
-    
     //////////////////////first triggered -----------------------
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         //this function checks if an AR anchore was added to the sceneview
+        
+        //check if the plane already exists
+        guard self.planeAnchor == nil else {return}
         //check if the anchor added is the plane anchore
         guard let planeAnchor = anchor as? ARPlaneAnchor else {return}
-        //check if the plane already exists
-        guard groundPlane == nil else {return}
         
-        //if it does not create one
-        let groundNode = createGroundPlane(planeAnchor: planeAnchor)
-        groundPlane = groundNode
-        //pointerYPosition = groundNode.parent!.position.y + groundNode.geometry!.boundingBox.max.y + pointer!.geometry!.boundingBox.max.y
-        
-        node.addChildNode(groundNode)
-        // init waveController
-        self.waveController = WaveMechanics(rootNode: self.sceneView.scene.rootNode)
-        self.waveController.delegate = self
-        self.waveController.delegateMissile = self
-        
+        self.planeAnchor = planeAnchor
+        self.planeNode = node
         DispatchQueue.main.async {
-            self.lookingForPlaneLabel.text = ""
-            self.hasPointer = true;
-            self.enableUI()
+            self.playButton.isHidden = false
+            self.lookingForPlaneLabel.isHidden = true
         }
         
     }
@@ -269,9 +270,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
 
     //did update gets triggered when we update the anchor of something in the real world
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-//        print("update")
-        guard let planeAnchor = anchor as? ARPlaneAnchor else {return}
 
+        //checks if the plane has been placed
+        guard self.groundPlane != nil else {return}
         
         node.rotation = groundPlane!.rotation
         node.scale = groundPlane!.scale
@@ -288,8 +289,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
 
     }
     
-    
-    
     //is called if the device makes an error and adds additional anchore for the same surface
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
         //informationLabel.text = "Looking for a surface"
@@ -300,6 +299,34 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
                 informationLabel.text = informationLabelText
             }
         }
+    }
+    
+    func initGroundPlane(){
+        
+        guard self.planeNode != nil else {return}
+        groundPlane = createGroundPlane(planeAnchor: self.planeAnchor!)
+        
+        planeNode!.addChildNode(groundPlane!)
+        // init waveController
+        self.waveController = WaveMechanics(rootNode: self.sceneView.scene.rootNode)
+        self.waveController.delegate = self
+        self.waveController.delegateMissile = self
+        
+    }
+    func onCompletedWave(){
+        showWaveCompletedAlert()
+        waveCompleted = false
+        objectsToPlace += 3
+        enableUI()
+    }
+    
+    func getCurrentPositionOfCamera()-> [SCNVector3]{
+        guard let pointOfView = sceneView.pointOfView else {return []}
+        let transform = pointOfView.transform
+        let orientation = SCNVector3(-transform.m31,-transform.m32,-transform.m33)
+        let location = SCNVector3(transform.m41,transform.m42,transform.m43)
+        let currentPositionOfCamera = addVectors(left: orientation, right: location)
+        return [currentPositionOfCamera, orientation]
     }
     
     func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
@@ -454,7 +481,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
         }
         
     }
-
+    
+    @IBAction func startGame(_ sender: Any) {
+        initGroundPlane()
+        enableUI()
+        self.hasPointer = true
+    }
     @IBAction func addObject(_ sender: Any) {
         if(objectsToPlace == 0){
             showNoMoreObjectsAlert()
@@ -591,19 +623,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UICollectionViewDataS
 }
 
 extension ViewController{
-    func enableUI(){
-        itemsCollectionView.isHidden = false
-        addButton.isHidden = false
-        addButton.isEnabled = true
-        nextWaveButton.isHidden = false
-        waveNumberLabel.isHidden = false
-        shootButton.isHidden = true
-        objectsToPlaceLabel.isHidden = false
-        updateObjectsToPlaceLabel()
-        selectedItem = itemsArray[0]
-        print(self.itemsCollectionView.contentSize.width)
-        playMusicLoop()
-    }
+    
     
     func startWaveSequenceUI(){
         addButton.isHidden = true
@@ -661,7 +681,6 @@ extension ViewController{
     
     func isCompleted() {
         waveCompleted = true
-        //showWaveCompletedAlert()
     }
     
     func missileLounched() {
@@ -680,7 +699,7 @@ extension ViewController{
     }
     func showNoTowersAlert(){
 
-        SCLAlertView().showInfo("Nothing to shot with", subTitle: "Add some towers!")
+        SCLAlertView().showInfo("Nothing to shoot with", subTitle: "Add some towers!")
     }
     
     func showAlertGameOver(){

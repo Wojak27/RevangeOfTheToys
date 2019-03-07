@@ -22,6 +22,7 @@
 		982C73E621ED34A400107C61 /* LavaARTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982C73E521ED34A400107C61 /* LavaARTests.swift */; };
 		982C73F121ED34A400107C61 /* LavaARUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982C73F021ED34A400107C61 /* LavaARUITests.swift */; };
 		982C744A21EE8ED800107C61 /* Models.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 982C744921EE8ED800107C61 /* Models.scnassets */; };
+		98580E5D2230933600DCAA1D /* Media in Resources */ = {isa = PBXBuildFile; fileRef = 98580E5C2230933500DCAA1D /* Media */; };
 		9870FF5721EE963D00AC215F /* itemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9870FF5621EE963D00AC215F /* itemCell.swift */; };
 		98A751BC222C54DD00BE4573 /* game_music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 98A751BB222C54DD00BE4573 /* game_music.mp3 */; };
 		98A751BF222C54FE00BE4573 /* explosion_music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 98A751BD222C54FE00BE4573 /* explosion_music.mp3 */; };
@@ -85,6 +86,7 @@
 		982C73F021ED34A400107C61 /* LavaARUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LavaARUITests.swift; sourceTree = "<group>"; };
 		982C73F221ED34A400107C61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		982C744921EE8ED800107C61 /* Models.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Models.scnassets; sourceTree = "<group>"; };
+		98580E5C2230933500DCAA1D /* Media */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Media; path = RevangeOfTheToys/Media; sourceTree = "<group>"; };
 		9870FF5621EE963D00AC215F /* itemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = itemCell.swift; sourceTree = "<group>"; };
 		98A751BB222C54DD00BE4573 /* game_music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = game_music.mp3; sourceTree = "<group>"; };
 		98A751BD222C54FE00BE4573 /* explosion_music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = explosion_music.mp3; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 		982C73C121ED34A300107C61 = {
 			isa = PBXGroup;
 			children = (
+				98580E5C2230933500DCAA1D /* Media */,
 				982C73CC21ED34A300107C61 /* RevangeOfTheToys */,
 				982C73E421ED34A400107C61 /* LavaARTests */,
 				982C73EF21ED34A400107C61 /* LavaARUITests */,
@@ -384,6 +387,7 @@
 				98A751DC222D519C00BE4573 /* green_Blocks_AlbedoTransparency.png in Resources */,
 				98A751C5222C5B3B00BE4573 /* gold_hit_sound.mp3 in Resources */,
 				982C73DB21ED34A400107C61 /* LaunchScreen.storyboard in Resources */,
+				98580E5D2230933600DCAA1D /* Media in Resources */,
 				98A751C0222C54FE00BE4573 /* shot_music.mp3 in Resources */,
 				98A751BC222C54DD00BE4573 /* game_music.mp3 in Resources */,
 				982C744A21EE8ED800107C61 /* Models.scnassets in Resources */,
